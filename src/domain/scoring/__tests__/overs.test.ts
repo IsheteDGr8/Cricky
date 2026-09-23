@@ -1,4 +1,4 @@
-import { ballsToOvers, oversToBalls, requiredRunRate, runRate } from '../overs';
+import { ballsToOvers, oversToBalls, requiredRunRateFor, runRate } from '../overs';
 
 describe('ballsToOvers', () => {
   it.each([
@@ -53,21 +53,21 @@ describe('runRate', () => {
   });
 });
 
-describe('requiredRunRate', () => {
+describe('requiredRunRateFor', () => {
   it('is 0 when the target is already reached', () => {
-    expect(requiredRunRate(100, 100, 12)).toBe(0);
-    expect(requiredRunRate(100, 104, 0)).toBe(0);
+    expect(requiredRunRateFor(100, 100, 12)).toBe(0);
+    expect(requiredRunRateFor(100, 104, 0)).toBe(0);
   });
 
   it('is Infinity when runs are needed and no balls remain', () => {
-    expect(requiredRunRate(100, 90, 0)).toBe(Infinity);
+    expect(requiredRunRateFor(100, 90, 0)).toBe(Infinity);
   });
 
   it('scales remaining runs to overs', () => {
-    expect(requiredRunRate(120, 90, 30)).toBe(6);
+    expect(requiredRunRateFor(120, 90, 30)).toBe(6);
   });
 
   it('rejects invalid input', () => {
-    expect(() => requiredRunRate(100, 90, -6)).toThrow(RangeError);
+    expect(() => requiredRunRateFor(100, 90, -6)).toThrow(RangeError);
   });
 });
