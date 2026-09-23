@@ -208,6 +208,28 @@ Deploy the locked-down rules to the **current** live app once the PIN account is
 - **Monitoring:** Sentry free tier for crashes and errors; Firebase console usage alerts; $1 budget alert.
 - **Environments:** `development` (Firebase emulator), `production` (live project). A separate `staging` Firebase project is optional later.
 
+### DevSecOps: security built into every stage
+
+Security is checked automatically at each step from writing code to running it, not bolted on at
+the end. Everything below is free for a public repo.
+
+| Stage       | Practice                                                                                                                                                                                                               |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Plan**    | Threat model ([`THREAT_MODEL.md`](THREAT_MODEL.md)) updated whenever a new role, data type or service is added.                                                                                                        |
+| **Code**    | Strict TypeScript, ESLint layer boundaries (only `src/data` touches Firebase), zod validation at the data boundary, CODEOWNERS review.                                                                                 |
+| **Commit**  | GitHub secret scanning with push protection blocks secrets before they land.                                                                                                                                           |
+| **Build**   | CI on every PR: CodeQL static analysis (security-extended), gitleaks secret scan of full history, dependency review (blocks high-severity additions), `npm audit` (high+), `npm audit signatures`.                     |
+| **Test**    | Unit tests (≥ 90% domain coverage); database rules tests against the emulator for every role, allowed and denied.                                                                                                      |
+| **Release** | Actions pinned to commit SHAs, least-privilege workflow tokens, deploy from CI with keyless Workload Identity Federation (no stored service-account keys), build provenance attestations and an SBOM for each release. |
+| **Operate** | App Check, security headers, Sentry, budget alert, OpenSSF Scorecard weekly, Dependabot, incident runbook in [`SECURITY.md`](../SECURITY.md).                                                                          |
+
+Repo settings (done once by the owner in GitHub):
+
+- **Settings → Code security:** enable Dependabot alerts and security updates, secret scanning,
+  push protection, and private vulnerability reporting.
+- **Settings → Rules → Rulesets** for `main`: require a pull request, require status checks (CI,
+  CodeQL, gitleaks, dependency review) to pass, block force pushes and deletion.
+
 ---
 
 ## 9. Phases
@@ -250,10 +272,20 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 - [ ] Replay real matches from the backup: moved to Phase 3, where the migration converts them to events.
 - [x] Layer boundaries enforced by ESLint; [`ARCHITECTURE.md`](ARCHITECTURE.md) written.
 
+### Phase 2.5: DevSecOps pipeline
+
+- [x] Security workflow: CodeQL, gitleaks (full history), dependency review.
+- [x] CI: `npm audit` (high+), `npm audit signatures`; actions pinned to SHAs; `persist-credentials: false`.
+- [x] OpenSSF Scorecard workflow.
+- [x] `SECURITY.md` (disclosure policy, incident response), `CODEOWNERS`, `THREAT_MODEL.md`.
+- [x] Security headers on the live site; emulator config for local rules testing.
+- [x] Found and fixed: the live site allowed anyone to self-register and then write. Writes are now restricted to the admin account.
+- [ ] Owner: disable email/password sign-up in Firebase Auth; enable GitHub security settings and the `main` ruleset (see DevSecOps above).
+
 ### Phase 3: Backend
 
 - [ ] New schema + zod schemas.
-- [ ] `database.rules.json` rewritten with validation; emulator rules tests.
+- [ ] `database.rules.json` rewritten with validation; emulator rules tests (run in CI).
 - [ ] Auth: Google + Apple sign-in for admins; anonymous sessions for scorers; scorer-code redemption.
 - [ ] Repositories (typed read/write, live subscriptions).
 - [ ] Migration script (old → new) with dry run, verified against the backup: replay old ball history into events; rebuild summaries and results; compare totals with the old data.
@@ -273,10 +305,13 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 - [ ] Performance: list virtualization, memoization, subscription cleanup.
 - [ ] Accessibility pass.
 - [ ] Load test: script 150+ simultaneous viewers against a live match; confirm bandwidth per viewer stays small.
-- [ ] Security review of rules and auth flows.
+- [ ] Security review of rules and auth flows against the OWASP MASVS (mobile) and ASVS Level 1 (web) checklists.
+- [ ] Content-Security-Policy for the new web app (report-only first, then enforced).
 
 ### Phase 6: Release
 
+- [ ] **Deploy pipeline:** GitHub Actions deploys rules and web on merge to `main`, authenticated with Workload Identity Federation (no long-lived keys); a protected `production` environment requires the owner's approval.
+- [ ] **Release integrity:** build provenance attestations and an SBOM attached to each GitHub release; EAS credentials stored in EAS, never in the repo.
 - [ ] **Web:** Expo web export → Firebase Hosting (with PWA manifest and security headers).
 - [ ] **Android:** EAS build → APK for direct sharing (free). Optional: Google Play ($25 one-time; new personal accounts need a closed test with 12 testers for 14 days before going public).
 - [ ] **iOS** (friend's Apple Developer account):

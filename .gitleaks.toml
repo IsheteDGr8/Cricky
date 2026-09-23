@@ -1,0 +1,13 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Firebase web API key: public by design (it identifies the project; access is enforced by database rules and App Check)"
+regexTarget = "match"
+regexes = ['''AIzaSyAzIFrKBsY2iwHRdFAPzE4NrincGKv8iyE''']
+
+[[allowlists]]
+description = "Firebase Auth user IDs in database rules are identifiers, not credentials"
+paths = ['''^firebase/database\.rules\.json$''']
+regexTarget = "match"
+regexes = ['''[A-Za-z0-9]{28}''']

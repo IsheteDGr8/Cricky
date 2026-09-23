@@ -17,6 +17,7 @@
     "test:ci": "jest --ci --coverage",
     "build:web": "expo export --platform web",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:ci",
+    "emulators": "firebase emulators:start --only auth,database --project demo-cricky",
     "prepare": "husky"
   },
   "dependencies": {
