@@ -1,0 +1,8 @@
+node_modules
+legacy
+backups
+dist
+coverage
+.expo
+package-lock.json
+assets
