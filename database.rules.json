@@ -1,0 +1,24 @@
+{
+  "rules": {
+    "tournaments": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "teams": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "matches": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "matchPins": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "playoffs": {
+      ".read": true,
+      ".write": "auth != null"
+    }
+  }
+}

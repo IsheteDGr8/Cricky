@@ -1,26 +1,646 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <!-- Add your custom CSS styles here -->
-    <style>
-        /* Add your CSS styles for formatting here */
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cricket Club @ UWB</title>
+    <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
-    <h1>Cricket Scores</h1>
-    <div id="scores-table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Points</th>
-                </tr>
-            </thead>
-            <tbody id="scores-list">
-                <!-- Scores will be populated here -->
-            </tbody>
-        </table>
+
+<header class="premium-header">
+    <div class="app-title">
+        <span style="font-size:1.6rem; margin-right:8px; line-height:1;">🏏</span>
+        <div style="display:flex; flex-direction:column;">
+            <span style="letter-spacing:1px; font-weight:800; font-size:1.1rem; line-height:1;">UWB Cricket Club</span>
+            <span style="color:var(--uwb-gold); font-size:0.65rem; text-transform:uppercase; font-weight:700; letter-spacing:2px; margin-top:2px;">Pro Edition</span>
+        </div>
     </div>
-    <script src="FantasyCricketLeague.js"></script>
+    <button id="admin-login-btn" class="premium-admin-btn" onclick="showAdminLogin()">Admin</button>
+    <button id="admin-logout-btn" class="premium-admin-btn hidden" onclick="adminLogout()">Logout</button>
+</header>
+
+
+<!-- =====================================================
+     VIEW 1: TOURNAMENTS LIST (default landing)
+     ===================================================== -->
+<div id="view-tournaments" class="container active">
+    <div class="card" style="padding:15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0; color:var(--uwb-purple);">🏆 Tournaments</h3>
+            <button id="new-tournament-quick-btn" class="small-btn gold hidden" onclick="openNewTournamentModal()">+ New</button>
+        </div>
+        <p class="section-sub" style="margin-top:0;">Tap a tournament to view its standings, top players and bracket.</p>
+        <div id="tournaments-list"></div>
+    </div>
+
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0; color:var(--uwb-purple);">⚡ Quick Matches</h3>
+            <button id="quick-match-btn" class="small-btn gold hidden" onclick="openQuickMatchSetup()">Start Quick Match</button>
+        </div>
+        <p class="section-sub" style="margin-top:0;">Friendlies and pickup games — scorecard is saved, but no tournament stats are affected.</p>
+        <div id="quick-matches-list"></div>
+    </div>
+</div>
+
+
+<!-- =====================================================
+     VIEW 2: TOURNAMENT DETAIL (Standings / Top Players / Squad / Manage)
+     ===================================================== -->
+<div id="view-tournament-detail" class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <button class="secondary back-btn" onclick="switchTab('view-tournaments')">&larr; Tournaments</button>
+        <span id="tournament-status-badge" class="status-pill"></span>
+    </div>
+
+    <div class="card" style="padding:15px;">
+        <h2 id="tournament-detail-name" style="margin:0; color:var(--uwb-purple); border:0; padding:0;">Tournament</h2>
+        <div id="tournament-detail-meta" style="color:#666; font-size:0.85rem; margin-top:4px;"></div>
+    </div>
+
+    <div class="match-tabs" id="tournament-sub-tabs">
+        <button id="tt-standings" class="tab-btn active" onclick="switchTournamentSubTab('standings')">🏆 Standings</button>
+        <button id="tt-matches" class="tab-btn" onclick="switchTournamentSubTab('matches')">🗓️ Matches</button>
+        <button id="tt-players" class="tab-btn" onclick="switchTournamentSubTab('players')">⭐ Top Players</button>
+        <button id="tt-squad" class="tab-btn" onclick="switchTournamentSubTab('squad')">👥 Squad</button>
+        <button id="tt-manage" class="tab-btn hidden" onclick="switchTournamentSubTab('manage')">⚙️ Manage</button>
+    </div>
+
+    <!-- Sub-tab: Standings -->
+    <div id="tsub-standings" class="match-tab-content active">
+        <div class="card" style="padding: 15px 10px;">
+            <div class="stage-toggle">
+                <div id="btn-group-stage" class="stage-option active" onclick="switchStageView('groups')">Group Stage</div>
+                <div id="btn-playoffs" class="stage-option" onclick="switchStageView('playoffs')">Playoffs</div>
+            </div>
+            <div id="standings-container" style="overflow-x:auto; border-radius:8px; border:1px solid #eaeaea; background:white;"></div>
+        </div>
+    </div>
+
+    <!-- Sub-tab: Matches (this tournament only) -->
+    <div id="tsub-matches" class="match-tab-content">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="margin:0; color:var(--uwb-purple);">🗓️ Matches</h3>
+                <button id="tournament-new-match-btn" class="small-btn gold hidden" onclick="openTournamentMatchSetup()">+ Start New Match</button>
+            </div>
+            <p class="section-sub" style="margin-top:0;">All matches played in this tournament.</p>
+            <div id="tournament-matches-list"></div>
+        </div>
+    </div>
+
+    <!-- Sub-tab: Top Players -->
+    <div id="tsub-players" class="match-tab-content">
+        <div class="card">
+            <h3 style="color:var(--uwb-purple);">🏏 Top Batters (Runs)</h3>
+            <p class="section-sub">Tournament leaders by total runs scored.</p>
+            <table>
+                <thead><tr><th>Player</th><th>Team</th><th>M</th><th>Runs</th></tr></thead>
+                <tbody id="top-batters-table"></tbody>
+            </table>
+        </div>
+        <div class="card">
+            <h3 style="color:var(--uwb-purple);">🥎 Top Bowlers (Wickets)</h3>
+            <p class="section-sub">Tournament leaders by wickets taken.</p>
+            <table>
+                <thead><tr><th>Player</th><th>Team</th><th>M</th><th>Wickets</th></tr></thead>
+                <tbody id="top-bowlers-table"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Sub-tab: Squad (teams in this tournament) -->
+    <div id="tsub-squad" class="match-tab-content">
+        <div class="card">
+            <h3 style="color:var(--uwb-purple); margin-bottom:6px;">👥 Teams</h3>
+            <p class="section-sub" style="margin-top:0;">Tap a team to view its full squad and player stats.</p>
+            <div id="tournament-teams-list"></div>
+        </div>
+    </div>
+
+    <!-- Sub-tab: Manage (admin only) -->
+    <div id="tsub-manage" class="match-tab-content">
+        <div class="card">
+            <h3>🛠️ Tournament Settings</h3>
+            <label style="font-size:0.8rem; font-weight:bold;">Tournament Name</label>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="tournament-rename-input" placeholder="Tournament Name">
+                <button class="small-btn gold" onclick="saveTournamentName()">Save</button>
+            </div>
+            <label style="font-size:0.8rem; font-weight:bold; margin-top:10px; display:block;">Default Overs (for new matches)</label>
+            <div style="display:flex; gap:5px;">
+                <input type="number" id="tournament-overs-default" placeholder="10">
+                <button class="small-btn gold" onclick="saveTournamentOvers()">Save</button>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:15px;">
+                <button id="archive-tournament-btn" class="small-btn secondary" style="flex:1;" onclick="toggleArchiveTournament()">Archive</button>
+                <button class="small-btn danger" style="flex:1;" onclick="deleteTournament()">Delete</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>1. Register Team</h3>
+            <input type="text" id="reg-team-name" placeholder="Team Name">
+            <input type="text" id="reg-captain" placeholder="Captain Name">
+            <textarea id="reg-players" placeholder="Other Players (comma separated)" rows="3"></textarea>
+            <button onclick="registerTeam()">Register Team</button>
+        </div>
+
+        <div class="card">
+            <h3>2. Manage Groups</h3>
+            <p style="font-size:0.75rem; color:#666; margin-top:0;">Assign teams to groups (e.g., A, B). Default is A.</p>
+            <div id="admin-group-assignments" style="margin-bottom:10px;"></div>
+            <button class="gold small-btn" style="width:100%;" onclick="saveGroupAssignments()">Save Group Assignments</button>
+        </div>
+
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3>3. Configure Playoffs</h3>
+                <button class="small-btn gold" onclick="autoFillPlayoffs()">✨ Auto-Fill</button>
+            </div>
+            <p style="font-size:0.75rem; color:#666; margin-top:0;">Set the brackets. Auto-fill uses current standings.</p>
+
+            <div style="display:grid; grid-template-columns: 1fr; gap:10px;">
+                <div style="background:#f9f9f9; padding:8px; border-radius:6px; border:1px solid #eee;">
+                    <div style="font-size:0.75rem; font-weight:bold; color:var(--uwb-purple); margin-bottom:5px;">Playoff 1 (Group A #1 vs B #2)</div>
+                    <div style="display:flex; gap:5px;">
+                        <select id="po-1-a"></select><select id="po-1-b"></select>
+                        <select id="po-1-w" style="background:#e8f5e9; border-color:#81c784;"><option value="">Winner...</option></select>
+                    </div>
+                </div>
+                <div style="background:#f9f9f9; padding:8px; border-radius:6px; border:1px solid #eee;">
+                    <div style="font-size:0.75rem; font-weight:bold; color:var(--uwb-purple); margin-bottom:5px;">Playoff 2 (Group B #1 vs A #2)</div>
+                    <div style="display:flex; gap:5px;">
+                        <select id="po-2-a"></select><select id="po-2-b"></select>
+                        <select id="po-2-w" style="background:#e8f5e9; border-color:#81c784;"><option value="">Winner...</option></select>
+                    </div>
+                </div>
+                <div style="background:#f9f9f9; padding:8px; border-radius:6px; border:1px solid #eee;">
+                    <div style="font-size:0.75rem; font-weight:bold; color:#888; margin-bottom:5px;">3rd Place Match</div>
+                    <div style="display:flex; gap:5px;">
+                        <select id="po-3-a"></select><select id="po-3-b"></select>
+                        <select id="po-3-w" style="background:#e8f5e9; border-color:#81c784;"><option value="">Winner...</option></select>
+                    </div>
+                </div>
+                <div style="background:#fff9e6; padding:8px; border-radius:6px; border:1px solid #ffe082;">
+                    <div style="font-size:0.75rem; font-weight:bold; color:var(--uwb-gold); margin-bottom:5px;">🏆 GRAND FINAL</div>
+                    <div style="display:flex; gap:5px;">
+                        <select id="po-f-a"></select><select id="po-f-b"></select>
+                        <select id="po-f-w" style="background:#e8f5e9; border-color:#81c784;"><option value="">Winner...</option></select>
+                    </div>
+                </div>
+            </div>
+            <button class="gold small-btn" style="width:100%; margin-top:10px;" onclick="savePlayoffs()">Save Bracket</button>
+        </div>
+
+        <div class="card" style="border-color: var(--danger);">
+            <h3 style="color:var(--danger)">Danger Zone</h3>
+            <p style="font-size:0.75rem; color:#666; margin-top:0;">Resets all stats for this tournament. Match scorecards stay intact.</p>
+            <button class="danger" onclick="resetTournamentStats()">⚠️ Reset Tournament Stats</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- =====================================================
+     VIEW 3: ALL MATCHES (with filter)
+     ===================================================== -->
+<div id="view-matches" class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin: 5px 5px 12px 5px;">
+        <h3 style="margin:0; color:var(--uwb-purple);">🏏 Matches</h3>
+        <select id="match-filter" onchange="setMatchFilter(this.value)" style="width:auto; min-width:140px; margin:0; padding:6px 10px; font-size:0.85rem;">
+            <option value="all">All Matches</option>
+            <option value="quick">⚡ Quick Matches</option>
+        </select>
+    </div>
+    <div id="matches-list"></div>
+</div>
+
+
+<!-- =====================================================
+     VIEW 4: TEAM DETAILS
+     ===================================================== -->
+<div id="view-team-details" class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <button class="secondary back-btn" onclick="goBackFromTeam()">&larr; Back</button>
+    </div>
+
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+             <div>
+                 <h2 id="team-details-name" style="margin:0; color:var(--uwb-purple);">Team Name</h2>
+                 <div id="team-details-captain" style="color:#666; font-size:0.9rem; margin-top:4px;"></div>
+             </div>
+        </div>
+
+        <div id="admin-team-controls" class="hidden" style="background:#fff9e6; padding:15px; border-radius:8px; border:1px solid #ffe082; margin-top:15px;">
+            <h4 style="margin:0 0 10px 0; color:#b7a57a; text-transform:uppercase; font-size:0.75rem;">Admin Team Settings</h4>
+
+            <label style="font-size:0.8rem; font-weight:bold;">Rename Team</label>
+            <div style="display:flex; gap:5px; margin-bottom:15px;">
+                <input type="text" id="admin-team-name-input" placeholder="Team Name" style="background:white;">
+                <button class="small-btn gold" onclick="saveTeamName()">Save</button>
+            </div>
+
+            <label style="font-size:0.8rem; font-weight:bold;">Set Captain</label>
+            <div style="display:flex; gap:5px; margin-bottom:15px;">
+                <select id="admin-captain-select" style="flex:1; background:white;"><option>Select Captain...</option></select>
+                <button class="small-btn gold" onclick="saveTeamCaptain()">Update</button>
+            </div>
+
+            <hr style="border:0; border-top:1px solid #ffe082; margin:10px 0;">
+             <button class="small-btn danger" style="width:100%;" onclick="confirmDeleteTeam()">Delete Team</button>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3>Squad</h3>
+            <div id="admin-add-player-div" class="hidden" style="display:flex; gap:5px;">
+                 <input type="text" id="new-player-name" placeholder="New Name" style="width:100px; padding:6px;">
+                 <button class="small-btn success" onclick="addPlayerToTeam()">+ Add</button>
+            </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>M</th>
+                        <th>R</th>
+                        <th>W</th>
+                        <th id="admin-th-actions" class="hidden" style="width:50px;">Edit</th>
+                    </tr>
+                </thead>
+                <tbody id="team-players-table"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- =====================================================
+     VIEW 5: GLOBAL ADMIN SETUP
+     ===================================================== -->
+<div id="view-admin" class="container">
+    <h2>Admin Setup</h2>
+
+    <div class="card">
+        <h3>🆕 Create Tournament</h3>
+        <p style="font-size:0.75rem; color:#666; margin-top:0;">Each tournament has its own teams, groups, playoffs and stats.</p>
+        <input type="text" id="new-tournament-name" placeholder="Tournament Name (e.g. Spring 2026)">
+        <input type="number" id="new-tournament-overs" value="10" placeholder="Default Overs">
+        <button class="gold" onclick="createTournament()">Create Tournament</button>
+    </div>
+
+    <div class="card">
+        <h3>📋 All Tournaments</h3>
+        <p style="font-size:0.75rem; color:#666; margin-top:0;">Tap to open a tournament's full management view.</p>
+        <div id="admin-tournaments-list"></div>
+    </div>
+
+    <div class="card">
+        <h3>⚡ Quick Match</h3>
+        <p style="font-size:0.75rem; color:#666; margin-top:0;">Start a friendly using any teams. Doesn't affect tournament stats.</p>
+        <button class="gold" onclick="openQuickMatchSetup()">Start Quick Match</button>
+    </div>
+
+    <div class="card" style="border-color: var(--danger);">
+        <h3 style="color:var(--danger)">Danger Zone</h3>
+        <p style="font-size:0.75rem; color:#666; margin-top:0;">Permanently wipes all tournaments, teams, players and matches.</p>
+        <button class="danger" onclick="wipeEverything()">⚠️ Wipe Everything</button>
+    </div>
+</div>
+
+
+<!-- =====================================================
+     VIEW 6: SCORING
+     ===================================================== -->
+<div id="view-scoring" class="container">
+
+    <div class="match-top-nav">
+        <button class="back-btn" onclick="switchTab('view-matches')">&larr; Matches</button>
+        <div class="match-top-nav-right">
+            <button id="share-match-btn" class="share-btn" onclick="shareCurrentMatch()" aria-label="Share match">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+                <span>Share</span>
+            </button>
+            <div id="admin-show-pin" class="admin-pin-badge hidden"></div>
+        </div>
+    </div>
+
+    <div class="score-header">
+
+        <div id="match-meta-info" class="match-meta-text"></div>
+
+        <div id="google-header" style="display:flex; justify-content:space-between; align-items:center;">
+
+            <div style="text-align:left; flex:1;">
+                <div id="head-team1-name" style="font-size:0.8rem; opacity:0.9; text-transform:uppercase; font-weight:600; margin-bottom:4px;">Team A</div>
+                <div style="display:flex; align-items:baseline; gap:4px;">
+                    <span id="head-team1-score" style="font-size:1.8rem; font-weight:800; line-height:1;">0/0</span>
+                    <span id="head-team1-overs" style="font-size:0.85rem; opacity:0.8;">(0.0)</span>
+                </div>
+            </div>
+
+            <div style="text-align:center; padding:0 5px; flex: 1.2;">
+                <div style="font-weight:bold; color:var(--uwb-gold); font-size:0.9rem; letter-spacing:1px;">VS</div>
+                <div id="target-msg" class="target-display" style="font-size:0.75rem; margin-top:5px; line-height:1.3; padding:4px 8px; border-radius:12px; display:none;"></div>
+            </div>
+
+            <div style="text-align:right; flex:1; display:flex; flex-direction:column; align-items:flex-end;">
+                <div id="head-team2-name" style="font-size:0.8rem; opacity:0.9; text-transform:uppercase; font-weight:600; margin-bottom:4px;">Team B</div>
+                <div style="display:flex; align-items:baseline; gap:4px; justify-content:flex-end;">
+                    <span id="head-team2-score" style="font-size:1.8rem; font-weight:800; line-height:1;">-</span>
+                    <span id="head-team2-overs" style="font-size:0.85rem; opacity:0.8;"></span>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.15); padding-top:10px; font-size:0.85rem; text-align:center;">
+            CRR: <span id="display-crr" style="font-weight:bold;">0.00</span> <span style="margin:0 8px; opacity:0.5;">|</span> <span id="match-status-text" style="opacity:0.9;">Live</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <div id="live-scoring-info" class="card">
+        <div class="batter-strip">
+            <div id="striker-name" class="active" onclick="tryOpenSelector('striker')">Striker *</div>
+            <div id="non-striker-name" onclick="tryOpenSelector('nonStriker')">Non-Striker</div>
+        </div>
+        <div style="text-align:center; font-size:0.9rem; color:#666; margin-top:5px;">
+            Bowler: <strong id="bowler-name" style="color:var(--uwb-purple); cursor:pointer;" onclick="tryOpenSelector('bowler')">Select Bowler</strong>
+            <span id="bowler-figs">(0-0)</span>
+        </div>
+        <div id="ball-history" class="timeline-slider"></div>
+    </div>
+
+    <div id="scorer-login-container" style="text-align:center; margin-top:10px;">
+        <button class="secondary small-btn" onclick="openScorerModal()">🔒 Scorer Access</button>
+    </div>
+
+    <div id="scoring-pad" class="hidden">
+        <div style="display:flex; justify-content: space-between; gap: 8px; margin-bottom: 8px;">
+            <button id="overs-limit-btn" class="secondary small-btn" onclick="changeOversLimit()">⏱ Overs: -</button>
+            <button class="secondary small-btn" onclick="undoLastBall()">↩ Undo</button>
+        </div>
+        <div class="control-grid">
+            <button class="control-btn" onclick="addScore(0)">0</button>
+            <button class="control-btn" onclick="addScore(1)">1</button>
+            <button class="control-btn" onclick="addScore(2)">2</button>
+            <button class="control-btn" onclick="addScore(3)">3</button>
+            <button class="control-btn" onclick="addScore(4)">4</button>
+            <button class="control-btn" onclick="addScore(5)">5</button>
+            <button class="control-btn" onclick="addScore(6)">6</button>
+            <button class="control-btn wicket" onclick="openWicketModal()">OUT</button>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:8px;">
+            <button class="control-btn" style="flex:1;" onclick="addScore('WD')">Wide</button>
+            <button class="control-btn" style="flex:1;" onclick="addScore('NB')">No Ball</button>
+            <button class="control-btn" style="flex:1;" onclick="addScore('BYE')">Bye</button>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button class="secondary" onclick="swapStrike()" style="margin-top:0;">Swap Strike</button>
+            <button class="danger" onclick="endInnings()" style="margin-top:0;">End Innings / Match</button>
+        </div>
+    </div>
+
+    <div id="match-tabs" class="match-tabs hidden">
+        <button id="mtab-summary" class="tab-btn" onclick="switchMatchTab('summary')">Summary</button>
+        <button id="mtab-scorecard" class="tab-btn active" onclick="switchMatchTab('scorecard')">Scorecard</button>
+        <button id="mtab-commentary" class="tab-btn" onclick="switchMatchTab('commentary')">Commentary</button>
+    </div>
+
+    <div id="tab-summary" class="match-tab-content"></div>
+
+    <div id="tab-scorecard" class="match-tab-content active">
+        <div class="inning-tabs">
+             <button id="itab-1" class="inning-btn active" onclick="switchInningTab(1)">Innings 1</button>
+             <button id="itab-2" class="inning-btn" onclick="switchInningTab(2)">Innings 2</button>
+        </div>
+        <div id="scorecard-container" class="scorecard-section"></div>
+    </div>
+
+    <div id="tab-commentary" class="match-tab-content"></div>
+</div>
+</div>
+
+
+<!-- =====================================================
+     MODALS
+     ===================================================== -->
+
+<div id="modal-new-tournament" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color:var(--uwb-purple)">🆕 New Tournament</h3>
+        <input type="text" id="modal-tournament-name" placeholder="Tournament Name">
+        <input type="number" id="modal-tournament-overs" value="10" placeholder="Default Overs">
+        <button class="gold" onclick="createTournamentFromModal()">Create</button>
+        <button class="secondary" onclick="closeModal('modal-new-tournament')">Cancel</button>
+    </div>
+</div>
+
+<div id="modal-tournament-match" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color:var(--uwb-purple)">🏏 Start Tournament Match</h3>
+        <p style="font-size:0.75rem; color:#666; margin-top:0;">Match counts toward this tournament's standings and player stats.</p>
+
+        <label style="font-size:0.8rem; font-weight:bold;">Team A</label>
+        <select id="match-teamA" onchange="updateMatchSetupUI()"><option value="">Select Team A</option></select>
+
+        <label style="font-size:0.8rem; font-weight:bold;">Team B</label>
+        <select id="match-teamB" onchange="updateMatchSetupUI()"><option value="">Select Team B</option></select>
+
+        <label style="font-size:0.8rem; font-weight:bold;">Overs</label>
+        <input type="number" id="match-overs" value="10" placeholder="Overs Limit">
+
+        <label style="font-size:0.8rem; font-weight:bold;">Scoring PIN</label>
+        <input type="password" id="match-pin" placeholder="Set Scoring PIN">
+
+        <label style="font-size:0.8rem; font-weight:bold;">Toss Winner</label>
+        <select id="toss-winner"><option value="">Pick teams first</option></select>
+
+        <div class="toss-toggle" style="margin-top:10px;">
+            <div id="toss-bat-btn" class="toss-option active" onclick="selectTossChoice('bat')">🏏 Chose to Bat</div>
+            <div id="toss-bowl-btn" class="toss-option" onclick="selectTossChoice('bowl')">🥎 Chose to Bowl</div>
+        </div>
+        <input type="hidden" id="toss-choice" value="bat">
+
+        <button class="gold" onclick="startMatch()">Start Match</button>
+        <button class="secondary" onclick="closeModal('modal-tournament-match')">Cancel</button>
+    </div>
+</div>
+
+<div id="modal-quick-match" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color:var(--uwb-purple)">⚡ Start Quick Match</h3>
+        <p style="font-size:0.75rem; color:#666; margin-top:0;">Set up two ad-hoc teams just for this match. Names and players exist only inside this scorecard — nothing is saved as a reusable team.</p>
+
+        <h4 style="margin-bottom:4px;">Team A</h4>
+        <input type="text" id="qm-teamA-name" placeholder="Team A name" oninput="updateQuickTossOptions()">
+        <textarea id="qm-teamA-players" placeholder="Players (one per line or comma separated)" rows="3"></textarea>
+
+        <h4 style="margin-bottom:4px;">Team B</h4>
+        <input type="text" id="qm-teamB-name" placeholder="Team B name" oninput="updateQuickTossOptions()">
+        <textarea id="qm-teamB-players" placeholder="Players (one per line or comma separated)" rows="3"></textarea>
+
+        <label style="font-size:0.8rem; font-weight:bold;">Overs</label>
+        <input type="number" id="qm-overs" value="10" placeholder="Overs Limit">
+
+        <label style="font-size:0.8rem; font-weight:bold;">Scoring PIN</label>
+        <input type="password" id="qm-pin" placeholder="Set Scoring PIN">
+
+        <label style="font-size:0.8rem; font-weight:bold;">Toss Winner</label>
+        <div class="toss-toggle" style="margin-bottom:10px;">
+            <div id="qm-toss-winner-A" class="toss-option active" onclick="selectQuickTossWinner('A')">Team A</div>
+            <div id="qm-toss-winner-B" class="toss-option" onclick="selectQuickTossWinner('B')">Team B</div>
+        </div>
+        <input type="hidden" id="qm-toss-winner" value="A">
+
+        <label style="font-size:0.8rem; font-weight:bold;">Decision</label>
+        <div class="toss-toggle" style="margin-top:4px;">
+            <div id="qm-toss-bat-btn" class="toss-option active" onclick="selectQuickTossChoice('bat')">🏏 Chose to Bat</div>
+            <div id="qm-toss-bowl-btn" class="toss-option" onclick="selectQuickTossChoice('bowl')">🥎 Chose to Bowl</div>
+        </div>
+        <input type="hidden" id="qm-toss-choice" value="bat">
+
+        <button class="gold" onclick="startQuickMatch()">Start Quick Match</button>
+        <button class="secondary" onclick="closeModal('modal-quick-match')">Cancel</button>
+    </div>
+</div>
+
+<div id="modal-potm" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color:var(--uwb-purple)">Select Player of the Match</h3>
+        <select id="potm-select"></select>
+        <br><br>
+        <button class="gold" onclick="savePOTM()">Save POTM</button>
+        <button class="secondary" onclick="closeModal('modal-potm')">Cancel</button>
+    </div>
+</div>
+
+<div id="modal-admin-login" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color:var(--uwb-purple);">🔐 Admin PIN</h3>
+        <p style="font-size:0.78rem; color:#666; margin-top:0; line-height:1.45;">Enter your 4-digit admin PIN to unlock tournament setup, scoring, and match management.</p>
+        <input type="password"
+               inputmode="numeric"
+               pattern="[0-9]*"
+               maxlength="4"
+               id="signin-pin"
+               autocomplete="off"
+               placeholder="••••"
+               style="font-size:1.6rem; text-align:center; letter-spacing:0.6em; padding-left:0.6em;"
+               onkeydown="if(event.key==='Enter') signInAdmin()">
+        <div id="signin-error" style="display:none; color:var(--danger); background:#ffebee; border:1px solid #ffcdd2; padding:8px 10px; border-radius:6px; font-size:0.8rem; margin-top:8px;"></div>
+        <button class="gold" id="signin-submit-btn" onclick="signInAdmin()">Unlock</button>
+        <button class="secondary" onclick="closeModal('modal-admin-login')">Cancel</button>
+    </div>
+</div>
+
+<div id="modal-player-select" class="modal-overlay">
+    <div class="modal">
+        <h3 id="select-title">Select Player</h3>
+        <div id="player-select-list"></div>
+        <button class="gold" onclick="promptAddPlayerToCurrentTeam()">+ Add New Player</button>
+        <button class="secondary" onclick="closeModal('modal-player-select')">Cancel</button>
+    </div>
+</div>
+
+<div id="modal-wicket" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color:var(--danger)">Wicket!</h3>
+        <label>Who got out?</label>
+        <select id="wicket-who-out"></select>
+
+        <label style="display:flex; align-items:center; gap:8px; margin: 12px 0; cursor:pointer;">
+            <input type="checkbox" id="wicket-is-runout" style="width:auto; margin:0; transform:scale(1.2);">
+            <strong>This is a Run Out</strong>
+        </label>
+
+        <label>Fielder Involved (Optional):</label>
+        <select id="wicket-fielder"></select>
+
+        <label>Next Batter:</label>
+        <select id="wicket-new-batter"></select>
+        <br><br>
+        <button class="danger" onclick="confirmWicket()">Confirm Wicket</button>
+        <button class="secondary" onclick="closeModal('modal-wicket')">Cancel</button>
+    </div>
+</div>
+
+<div id="modal-scorer-login" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color:var(--uwb-purple)">Scorer Login</h3>
+        <input type="password" id="scorer-pin-input" placeholder="Enter Match PIN">
+        <button class="gold" onclick="unlockScoring()">Unlock</button>
+        <button class="secondary" onclick="closeModal('modal-scorer-login')">Cancel</button>
+        <div id="admin-delete-match-div" class="hidden" style="margin-top:20px; border-top:1px solid #ddd; padding-top:10px;">
+            <button class="danger" style="width:100%;" onclick="deleteMatch()">Delete Match (Admin)</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-edit-player" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color:var(--uwb-purple)">Manage Player</h3>
+        <input type="hidden" id="edit-player-id">
+
+        <label>Player Name</label>
+        <input type="text" id="edit-player-name" style="margin-bottom:15px;">
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:20px; background:#f9f9f9; padding:10px; border-radius:6px;">
+            <div style="text-align:center;">
+                <label style="font-size:0.75rem; display:block;">Matches</label>
+                <input type="number" id="edit-player-matches" style="width:100%; text-align:center;">
+            </div>
+            <div style="text-align:center;">
+                <label style="font-size:0.75rem; display:block;">Runs</label>
+                <input type="number" id="edit-player-runs" style="width:100%; text-align:center;">
+            </div>
+             <div style="text-align:center;">
+                <label style="font-size:0.75rem; display:block;">Wickets</label>
+                <input type="number" id="edit-player-wickets" style="width:100%; text-align:center;">
+            </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="gold" style="flex:1;" onclick="savePlayerEdits()">Save Changes</button>
+            <button class="secondary" style="flex:1;" onclick="closeModal('modal-edit-player')">Cancel</button>
+        </div>
+        <button class="danger small-btn" style="margin-top:15px; width:100%; background:white; color:var(--danger); border:1px solid var(--danger);" onclick="deletePlayer()">Remove Player from Team</button>
+    </div>
+</div>
+
+
+<!-- =====================================================
+     BOTTOM NAV
+     ===================================================== -->
+<div class="premium-nav-bar">
+    <div class="nav-item active" onclick="switchTab('view-tournaments')">
+        <span class="nav-icon">🏆</span>
+        <span class="nav-label">Tournaments</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('view-matches')">
+        <span class="nav-icon">🏏</span>
+        <span class="nav-label">Matches</span>
+    </div>
+    <div id="nav-setup" class="nav-item hidden" onclick="switchTab('view-admin')">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Setup</span>
+    </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>
