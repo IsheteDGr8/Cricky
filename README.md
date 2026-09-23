@@ -52,6 +52,8 @@ docs/          Plans and architecture notes
 ```
 
 Dependency rule: `app/` may use `domain/` and `ui/`; `domain/` imports nothing app-specific.
+ESLint enforces it. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the layers and how
+event-sourced scoring works.
 
 ## Deploying the v1 site and rules
 

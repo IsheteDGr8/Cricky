@@ -29,7 +29,7 @@ export function runRate(runs: number, legalBalls: number): number {
  * Returns 0 when the target is already reached, and Infinity when runs are
  * still needed but no balls remain.
  */
-export function requiredRunRate(target: number, runs: number, ballsRemaining: number): number {
+export function requiredRunRateFor(target: number, runs: number, ballsRemaining: number): number {
   assertNonNegativeInteger(target, 'target');
   assertNonNegativeInteger(runs, 'runs');
   assertNonNegativeInteger(ballsRemaining, 'ballsRemaining');

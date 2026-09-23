@@ -2,7 +2,13 @@
 module.exports = {
   preset: 'jest-expo',
   testPathIgnorePatterns: ['/node_modules/', '/legacy/', '/dist/'],
-  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/app/**', '!**/*.d.ts'],
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/app/**',
+    '!**/__fixtures__/**',
+    '!**/index.ts',
+    '!**/*.d.ts',
+  ],
   coverageThreshold: {
     './src/domain/': { branches: 90, functions: 90, lines: 90, statements: 90 },
   },

@@ -85,19 +85,18 @@ It's a web-only framework: it wouldn't give phone apps, and its server features 
 
 ```
 cricky/
-  app/                         Expo Router screens
-    (tabs)/                    Tournaments, Matches, Leaderboards, Settings
-    tournament/[id]/           Standings, Matches, Squads, Stats, Playoffs, Manage
-    match/[id].tsx             Live scorecard + commentary + summary (viewer)
-    score/[id].tsx             Scoring pad (scorer only)
-    admin/                     Admin-only screens
   src/
+    app/                       Expo Router screens
+      (tabs)/                  Tournaments, Matches, Leaderboards, More
+      tournament/[id]/         Standings, Matches, Squads, Stats, Playoffs, Manage
+      match/[id].tsx           Live scorecard + commentary + summary (viewer)
+      score/[id].tsx           Scoring pad (scorer only)
+      admin/                   Admin-only screens
     domain/                    PURE TypeScript: no Firebase, no React
-      scoring/                 applyEvent, deriveInnings, deriveMatch, undo
-      rules/                   extras, wickets, strike rotation, over end, innings end
-      stats/                   batting/bowling cards, net run rate, standings, leaderboards
-      playoffs/                bracket generation and advancement
-      __tests__/               exhaustive unit tests
+      scoring/                 events, rules, engine (applyEvent/replay), result, selectors, commentary
+      stats/                   match summaries, standings + net run rate, leaderboards
+      playoffs/                bracket formats and resolution
+      __fixtures__/            shared test builders (tests sit in each folder's __tests__/)
     data/                      the ONLY layer that imports Firebase
       firebase.ts              init, App Check, auth
       repositories/            tournaments, teams, matches, events, summaries, roles
@@ -116,7 +115,7 @@ cricky/
   app.config.ts  eas.json  firebase.json  package.json  tsconfig.json
 ```
 
-**Dependency rule:** `app/` → `features/` → `domain/` and `data/`. `domain/` imports nothing app-specific, so it can be tested in isolation.
+**Dependency rule:** `app/` → `features/` → `domain/` and `data/`. `domain/` imports nothing app-specific, so it can be tested in isolation. Enforced by ESLint; details in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ---
 
@@ -233,21 +232,23 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 
 ### Phase 2: Scoring engine (`src/domain`)
 
-- [ ] Event types and a reducer: `applyEvent(state, event)`.
-- [ ] Rules:
+- [x] Event types and a reducer: `applyEvent(state, event)`.
+- [x] Rules:
   - legal ball, wide, no-ball (+ runs), byes, leg-byes
   - wicket types (bowled, caught, LBW, run out ± runs, stumped, hit wicket, retired)
   - strike rotation
   - over end and bowler change (no consecutive overs)
-- [ ] Innings end: overs done, wicket limit reached (squad size − 1), target reached, or ended manually.
-- [ ] Match end, result, ties.
-- [ ] Mid-game changes: overs, added players.
-- [ ] Undo through any event, including innings or match end.
-- [ ] Batting and bowling cards, fall of wickets, partnerships, commentary text.
-- [ ] Standings (played / won / lost / tied / points) and net run rate (all-out counts as full overs).
-- [ ] Leaderboards per tournament (quick matches excluded).
-- [ ] Playoff bracket generation and advancement.
-- [ ] Exhaustive tests, including a replay of real matches from the backup.
+- [x] Innings end: overs done, wicket limit reached (squad size − 1), target reached, or ended manually.
+- [x] Match end, result, ties.
+- [x] Mid-game changes: overs, added players.
+- [x] Undo through any event, including innings or match end.
+- [x] Batting and bowling cards, fall of wickets, partnerships, commentary text.
+- [x] Standings (played / won / lost / tied / points) and net run rate (all-out counts as full overs).
+- [x] Leaderboards per tournament (quick matches excluded; the caller picks which matches count).
+- [x] Playoff bracket generation and advancement.
+- [x] Exhaustive tests (180 tests, ≥ 90% coverage enforced).
+- [ ] Replay real matches from the backup: moved to Phase 3, where the migration converts them to events.
+- [x] Layer boundaries enforced by ESLint; [`ARCHITECTURE.md`](ARCHITECTURE.md) written.
 
 ### Phase 3: Backend
 
