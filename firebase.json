@@ -1,13 +1,9 @@
 {
   "hosting": {
-    "public": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ]
+    "public": "legacy",
+    "ignore": ["**/.*", "**/node_modules/**"]
   },
   "database": {
-    "rules": "database.rules.json"
+    "rules": "firebase/database.rules.json"
   }
 }
