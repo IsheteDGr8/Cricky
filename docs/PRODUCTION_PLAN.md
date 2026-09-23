@@ -255,11 +255,11 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 
 ### Phase 0: Safety and repo
 
-- [ ] Back up the live database to `backups/<date>.json` (gitignored).
-- [ ] Deploy the locked-down rules to the current live app (after confirming the admin PIN account exists).
-- [ ] Initialize git on top of the existing GitHub history; commit the current app; tag `v1-legacy`.
-- [ ] Push to `main`.
-- [ ] Move the working copy out of OneDrive (recommended: `C:\dev\Cricky`), because OneDrive syncing `node_modules` is slow and error-prone.
+- [x] Back up the live database to `backups/<date>.json` (gitignored).
+- [x] Deploy the locked-down rules to the current live app (after confirming the admin PIN account exists).
+- [x] Initialize git on top of the existing GitHub history; commit the current app; tag `v1-legacy`.
+- [x] Push to `main`.
+- [x] Decide the working location: the project stays in its current OneDrive folder. Pause OneDrive syncing during large `npm install`s if it slows things down.
 
 
 
