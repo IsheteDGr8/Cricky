@@ -1,24 +1,308 @@
 {
   "rules": {
+    "roles": {
+      ".read": "auth != null && root.child('roles').child(auth.uid).val() === 'owner'",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('roles').child(auth.uid).val() === 'owner')",
+        ".write": "auth != null && root.child('roles').child(auth.uid).val() === 'owner' && auth.uid !== $uid",
+        ".validate": "newData.val() === 'admin'"
+      }
+    },
+
     "tournaments": {
       ".read": true,
-      ".write": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'"
+      "$tid": {
+        ".write": "auth != null && (root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner')",
+        ".validate": "newData.hasChildren(['name', 'status', 'oversDefault', 'playoffFormat', 'thirdPlace', 'createdAt', 'createdBy'])",
+        "name": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 60"
+        },
+        "status": {
+          ".validate": "newData.isString() && newData.val().matches(/^(upcoming|active|complete|archived)$/)"
+        },
+        "oversDefault": {
+          ".validate": "newData.isNumber() && newData.val() % 1 === 0 && newData.val() >= 1 && newData.val() <= 50"
+        },
+        "playoffFormat": {
+          ".validate": "newData.isString() && newData.val().matches(/^(none|final_only|top_four|crossover)$/)"
+        },
+        "thirdPlace": { ".validate": "newData.isBoolean()" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "createdBy": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 128"
+        },
+        "playoffWinners": {
+          "$fixtureId": {
+            ".validate": "$fixtureId.length <= 40 && newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+          }
+        },
+        "$other": { ".validate": false }
+      }
     },
+
     "teams": {
       ".read": true,
-      ".write": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'"
+      ".indexOn": ["tournamentId"],
+      "$teamId": {
+        ".write": "auth != null && (root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner')",
+        ".validate": "$teamId.length <= 40 && newData.hasChildren(['name', 'tournamentId', 'group', 'players'])",
+        "name": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+        },
+        "tournamentId": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+        },
+        "group": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 10"
+        },
+        "captainId": {
+          ".validate": "newData.isString() && newData.parent().child('players').child(newData.val()).exists()"
+        },
+        "players": {
+          "$pid": {
+            ".validate": "$pid.length <= 40 && newData.hasChildren(['name', 'order'])",
+            "name": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+            },
+            "order": {
+              ".validate": "newData.isNumber() && newData.val() % 1 === 0 && newData.val() >= 0 && newData.val() < 100"
+            },
+            "$other": { ".validate": false }
+          }
+        },
+        "$other": { ".validate": false }
+      }
     },
+
     "matches": {
       ".read": true,
-      ".write": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'"
+      "$mid": {
+        ".write": "auth != null && (root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner')",
+        ".validate": "$mid.length <= 40 && newData.hasChildren(['meta', 'head'])",
+
+        "meta": {
+          ".validate": "newData.hasChildren(['stage', 'teamA', 'teamB', 'teams', 'players', 'oversPerInnings', 'toss', 'createdAt', 'createdBy', 'locked'])",
+          "stage": {
+            ".validate": "newData.isString() && newData.val().matches(/^(group|playoff|quick)$/)"
+          },
+          "tournamentId": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+          },
+          "fixtureId": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+          },
+          "teamA": {
+            ".validate": "newData.isString() && newData.parent().child('teams').child(newData.val()).exists()"
+          },
+          "teamB": {
+            ".validate": "newData.isString() && newData.val() !== newData.parent().child('teamA').val() && newData.parent().child('teams').child(newData.val()).exists()"
+          },
+          "teams": {
+            "$teamId": {
+              ".validate": "$teamId.length <= 40 && newData.hasChildren(['name'])",
+              "name": {
+                ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+              },
+              "$other": { ".validate": false }
+            }
+          },
+          "players": {
+            "$pid": {
+              ".validate": "$pid.length <= 40 && newData.hasChildren(['name', 'team', 'order'])",
+              "name": {
+                ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+              },
+              "team": {
+                ".validate": "newData.val() === newData.parent().parent().parent().child('teamA').val() || newData.val() === newData.parent().parent().parent().child('teamB').val()"
+              },
+              "order": {
+                ".validate": "newData.isNumber() && newData.val() % 1 === 0 && newData.val() >= 0 && newData.val() < 100"
+              },
+              "$other": { ".validate": false }
+            }
+          },
+          "oversPerInnings": {
+            ".validate": "newData.isNumber() && newData.val() % 1 === 0 && newData.val() >= 1 && newData.val() <= 50"
+          },
+          "toss": {
+            ".validate": "newData.hasChildren(['winner', 'decision'])",
+            "winner": {
+              ".validate": "newData.val() === newData.parent().parent().child('teamA').val() || newData.val() === newData.parent().parent().child('teamB').val()"
+            },
+            "decision": {
+              ".validate": "newData.isString() && newData.val().matches(/^(bat|bowl)$/)"
+            },
+            "$other": { ".validate": false }
+          },
+          "createdAt": { ".validate": "newData.isNumber()" },
+          "createdBy": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 128"
+          },
+          "locked": {
+            ".write": "auth != null && newData.val() === true && root.child('scorerCodes').child($mid).child('code').exists() && root.child('scorers').child($mid).child(auth.uid).child('code').val() === root.child('scorerCodes').child($mid).child('code').val()",
+            ".validate": "newData.isBoolean()"
+          },
+          "$other": { ".validate": false }
+        },
+
+        "head": {
+          ".write": "auth != null && root.child('matches').child($mid).child('meta/locked').val() !== true && root.child('scorerCodes').child($mid).child('code').exists() && root.child('scorers').child($mid).child(auth.uid).child('code').val() === root.child('scorerCodes').child($mid).child('code').val()",
+          ".validate": "newData.isNumber() && ((!data.exists() && newData.val() === 0) || (newData.val() === data.val() + 1 && newData.parent().child('events').child('' + data.val()).exists()) || (newData.val() === data.val() - 1 && !newData.parent().child('events').child('' + newData.val()).exists()) || root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner')"
+        },
+
+        "events": {
+          "$seq": {
+            ".write": "auth != null && root.child('matches').child($mid).child('meta/locked').val() !== true && root.child('scorerCodes').child($mid).child('code').exists() && root.child('scorers').child($mid).child(auth.uid).child('code').val() === root.child('scorerCodes').child($mid).child('code').val() && ((!data.exists() && $seq === '' + root.child('matches').child($mid).child('head').val() && newData.parent().parent().child('head').val() === root.child('matches').child($mid).child('head').val() + 1) || (data.exists() && !newData.exists() && $seq === '' + (root.child('matches').child($mid).child('head').val() - 1) && newData.parent().parent().child('head').val() === root.child('matches').child($mid).child('head').val() - 1))",
+            ".validate": "newData.hasChildren(['type', 'by', 'at']) && newData.child('by').val() === auth.uid && newData.child('at').val() === now && (newData.child('type').val() !== 'set_openers' || newData.hasChildren(['striker', 'nonStriker'])) && (newData.child('type').val() !== 'set_bowler' || newData.hasChild('bowler')) && (newData.child('type').val() !== 'delivery' || newData.hasChild('runs')) && (newData.child('type').val() !== 'new_batter' || newData.hasChild('batter')) && (newData.child('type').val() !== 'retire' || newData.hasChildren(['batter', 'kind'])) && (newData.child('type').val() !== 'set_overs' || newData.hasChild('overs')) && (newData.child('type').val() !== 'add_player' || newData.hasChildren(['team', 'player', 'playerName']))",
+            "type": {
+              ".validate": "newData.isString() && newData.val().matches(/^(set_openers|set_bowler|delivery|new_batter|swap_strike|retire|end_innings|set_overs|add_player|set_player_of_match)$/)"
+            },
+            "by": { ".validate": "newData.isString()" },
+            "at": { ".validate": "newData.isNumber()" },
+            "striker": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+            },
+            "nonStriker": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+            },
+            "bowler": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+            },
+            "batter": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+            },
+            "player": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+            },
+            "team": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+            },
+            "playerName": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+            },
+            "runs": {
+              ".validate": "newData.isNumber() && newData.val() % 1 === 0 && newData.val() >= 0 && newData.val() <= 7"
+            },
+            "extra": {
+              ".validate": "newData.isString() && newData.val().matches(/^(wide|no_ball|bye|leg_bye)$/)"
+            },
+            "kind": {
+              ".validate": "newData.isString() && newData.val().matches(/^(retired_hurt|retired_out)$/)"
+            },
+            "overs": {
+              ".validate": "newData.isNumber() && newData.val() % 1 === 0 && newData.val() >= 1 && newData.val() <= 50"
+            },
+            "wicket": {
+              ".validate": "newData.hasChildren(['kind', 'playerOut'])",
+              "kind": {
+                ".validate": "newData.isString() && newData.val().matches(/^(bowled|caught|lbw|run_out|stumped|hit_wicket)$/)"
+              },
+              "playerOut": {
+                ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+              },
+              "fielder": {
+                ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+              },
+              "$other": { ".validate": false }
+            },
+            "$other": { ".validate": false }
+          }
+        },
+
+        "$other": { ".validate": false }
+      }
     },
-    "matchPins": {
-      ".read": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'",
-      ".write": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'"
-    },
-    "playoffs": {
+
+    "matchSummaries": {
       ".read": true,
-      ".write": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'"
+      ".indexOn": ["tournamentId", "updatedAt"],
+      "$mid": {
+        ".write": "auth != null && (root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner' || (root.child('matches').child($mid).child('meta/locked').val() !== true && root.child('scorerCodes').child($mid).child('code').exists() && root.child('scorers').child($mid).child(auth.uid).child('code').val() === root.child('scorerCodes').child($mid).child('code').val()))",
+        ".validate": "newData.hasChildren(['stage', 'teamA', 'teamB', 'status', 'updatedAt']) && newData.child('updatedAt').val() === now",
+        "stage": {
+          ".validate": "newData.isString() && newData.val().matches(/^(group|playoff|quick)$/)"
+        },
+        "tournamentId": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+        },
+        "teamA": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+        },
+        "teamB": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+        },
+        "status": {
+          ".validate": "newData.isString() && newData.val().matches(/^(scheduled|live|complete)$/)"
+        },
+        "updatedAt": { ".validate": "newData.isNumber()" },
+        "innings": {
+          "$i": {
+            ".validate": "$i.matches(/^[01]$/) && newData.hasChildren(['battingTeam', 'runs', 'wickets', 'legalBalls'])",
+            "battingTeam": {
+              ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+            },
+            "runs": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000"
+            },
+            "wickets": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 100"
+            },
+            "legalBalls": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 300"
+            },
+            "$other": { ".validate": false }
+          }
+        },
+        "result": {
+          ".validate": "newData.hasChildren(['kind'])",
+          "kind": { ".validate": "newData.isString() && newData.val().matches(/^(win|tie)$/)" },
+          "winner": {
+            ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+          },
+          "by": { ".validate": "newData.isString() && newData.val().matches(/^(runs|wickets)$/)" },
+          "margin": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() < 10000"
+          },
+          "$other": { ".validate": false }
+        },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "matchResults": {
+      ".read": true,
+      ".indexOn": ["tournamentId"],
+      "$mid": {
+        ".write": "auth != null && (root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner' || (root.child('matches').child($mid).child('meta/locked').val() !== true && root.child('scorerCodes').child($mid).child('code').exists() && root.child('scorers').child($mid).child(auth.uid).child('code').val() === root.child('scorerCodes').child($mid).child('code').val()))",
+        ".validate": "newData.hasChildren(['stage', 'teamA', 'teamB', 'oversPerInnings', 'result', 'innings'])"
+      }
+    },
+
+    "scorerCodes": {
+      "$mid": {
+        ".read": "auth != null && (root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner')",
+        ".write": "auth != null && (root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner')",
+        ".validate": "newData.hasChildren(['code'])",
+        "code": {
+          ".validate": "newData.isString() && newData.val().matches(/^[A-HJ-NP-Z2-9]{10}$/)"
+        },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "scorers": {
+      "$mid": {
+        ".read": "auth != null && (root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner')",
+        ".write": "auth != null && !newData.exists() && (root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner')",
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && (root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner' || (auth.uid === $uid && (!newData.exists() || (root.child('scorerCodes').child($mid).child('code').exists() && newData.child('code').val() === root.child('scorerCodes').child($mid).child('code').val()))))",
+          ".validate": "newData.hasChildren(['code', 'at']) && newData.child('at').val() === now",
+          "code": { ".validate": "newData.isString() && newData.val().length === 10" },
+          "at": { ".validate": "newData.isNumber()" },
+          "$other": { ".validate": false }
+        }
+      }
     }
   }
 }

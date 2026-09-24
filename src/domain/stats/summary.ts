@@ -104,6 +104,40 @@ export function summarizeMatch(id: string, state: MatchState): CompletedMatch {
   };
 }
 
+export interface ScoreSummary {
+  status: 'scheduled' | 'live' | 'complete';
+  innings: { battingTeam: TeamId; runs: number; wickets: number; legalBalls: number }[];
+  result?:
+    { kind: 'tie' } | { kind: 'win'; winner: TeamId; by: 'runs' | 'wickets'; margin: number };
+}
+
+/** The few numbers a match list shows: status, score per innings and the result. */
+export function scoreSummary(state: MatchState): ScoreSummary {
+  const started = state.innings.some((inn) => inn.battingOrder.length > 0);
+  const status = state.status === 'complete' ? 'complete' : started ? 'live' : 'scheduled';
+  const innings = state.innings
+    .filter((inn) => inn.number === 1 || inn.battingOrder.length > 0 || state.status === 'complete')
+    .map((inn) => ({
+      battingTeam: inn.battingTeam,
+      runs: inn.runs,
+      wickets: inn.wickets,
+      legalBalls: inn.legalBalls,
+    }));
+
+  const summary: ScoreSummary = { status, innings };
+  const r = state.result;
+  if (r?.kind === 'tie') summary.result = { kind: 'tie' };
+  if (r?.kind === 'win') {
+    summary.result = {
+      kind: 'win',
+      winner: r.winner,
+      by: r.margin.by,
+      margin: r.margin.by === 'runs' ? r.margin.runs : r.margin.wickets,
+    };
+  }
+  return summary;
+}
+
 /** Net run rate counts an all-out innings as if the full quota of overs was faced. */
 export function nrrBalls(innings: InningsSummary, oversPerInnings: number): number {
   return innings.allOut ? oversPerInnings * BALLS_PER_OVER : innings.legalBalls;

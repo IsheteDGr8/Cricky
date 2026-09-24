@@ -1,7 +1,7 @@
 /** @type {import('jest').Config} */
 module.exports = {
   preset: 'jest-expo',
-  testPathIgnorePatterns: ['/node_modules/', '/legacy/', '/dist/'],
+  testPathIgnorePatterns: ['/node_modules/', '/legacy/', '/dist/', '\\.emulator\\.test\\.ts$'],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/app/**',

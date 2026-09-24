@@ -4,6 +4,7 @@ import { battingLeaders, bowlingLeaders } from '../leaderboards';
 import { computeStandings, netRunRate } from '../standings';
 import {
   nrrBalls,
+  scoreSummary,
   summarizeMatch,
   type CompletedMatch,
   type InningsSummary,
@@ -116,6 +117,55 @@ describe('summarizeMatch', () => {
       makeSetup({ squadSize: 2 }),
     );
     expect(summarizeMatch('m3', state).innings[0].allOut).toBe(true);
+  });
+});
+
+describe('scoreSummary', () => {
+  it('is scheduled before the openers walk out', () => {
+    expect(scoreSummary(play([]))).toEqual({
+      status: 'scheduled',
+      innings: [{ battingTeam: 'A', runs: 0, wickets: 0, legalBalls: 0 }],
+    });
+  });
+
+  it('is live with the current score once play starts', () => {
+    const state = play([
+      ev.openers('a1', 'a2'),
+      ev.bowler('b1'),
+      ev.runs(4),
+      ev.out('bowled', 'a1'),
+    ]);
+    expect(scoreSummary(state)).toEqual({
+      status: 'live',
+      innings: [{ battingTeam: 'A', runs: 4, wickets: 1, legalBalls: 2 }],
+    });
+  });
+
+  it('shows the chase only after it starts', () => {
+    const first = firstInningsOf([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    expect(scoreSummary(play(first)).innings).toHaveLength(1);
+    expect(scoreSummary(play([...first, ev.openers('b1', 'b2')])).innings).toHaveLength(2);
+  });
+
+  it('includes the result', () => {
+    const first = firstInningsOf([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    const byWickets = play([...first, ev.openers('b1', 'b2'), ...over('a1', [ev.runs(2)])]);
+    expect(scoreSummary(byWickets)).toMatchObject({
+      status: 'complete',
+      result: { kind: 'win', winner: 'B', by: 'wickets', margin: 4 },
+    });
+    const byRuns = play([...first, ev.endInnings()]);
+    expect(scoreSummary(byRuns)).toMatchObject({
+      result: { kind: 'win', winner: 'A', by: 'runs', margin: 1 },
+    });
+    expect(scoreSummary(byRuns).innings).toHaveLength(2);
+    const tie = play([
+      ...first,
+      ev.openers('b1', 'b2'),
+      ...over('a1', [ev.runs(1)]),
+      ev.endInnings(),
+    ]);
+    expect(scoreSummary(tie).result).toEqual({ kind: 'tie' });
   });
 });
 

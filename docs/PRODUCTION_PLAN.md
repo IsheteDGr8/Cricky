@@ -284,10 +284,11 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 
 ### Phase 3: Backend
 
-- [ ] New schema + zod schemas.
-- [ ] `database.rules.json` rewritten with validation; emulator rules tests (run in CI).
-- [ ] Auth: Google + Apple sign-in for admins; anonymous sessions for scorers; scorer-code redemption.
-- [ ] Repositories (typed read/write, live subscriptions).
+- [x] New schema + zod schemas.
+- [x] `database.rules.json` rewritten with validation; emulator rules tests (run in CI).
+- [x] Auth: Google + Apple sign-in for admins; anonymous sessions for scorers; scorer-code redemption.
+- [x] Repositories (typed read/write, live subscriptions), tested end to end against the emulator.
+- [ ] Owner: enable the Anonymous, Google and Apple providers in Firebase Auth (needed before cutover).
 - [ ] Migration script (old → new) with dry run, verified against the backup: replay old ball history into events; rebuild summaries and results; compare totals with the old data.
 
 ### Phase 4: Features

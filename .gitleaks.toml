@@ -8,7 +8,7 @@ useDefault = true
 # Legacy single allowlist block (required by gitleaks 8.24 used in gitleaks-action@v3 default).
 [allowlist]
 description = "Public Firebase identifiers and rules file"
-paths = ['''(^|/)firebase/database\.rules\.json$''']
+paths = ['''(^|/)firebase/legacy\.rules\.json$''']
 regexes = [
   '''AIzaSyAzIFrKBsY2iwHRdFAPzE4NrincGKv8iyE''',
   '''vJQmdPwLdENXGqOcZJzPNZE39AD3''',

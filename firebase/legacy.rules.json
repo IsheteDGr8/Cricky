@@ -1,0 +1,24 @@
+{
+  "rules": {
+    "tournaments": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'"
+    },
+    "teams": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'"
+    },
+    "matches": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'"
+    },
+    "matchPins": {
+      ".read": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'",
+      ".write": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'"
+    },
+    "playoffs": {
+      ".read": true,
+      ".write": "auth != null && auth.uid === 'vJQmdPwLdENXGqOcZJzPNZE39AD3'"
+    }
+  }
+}
