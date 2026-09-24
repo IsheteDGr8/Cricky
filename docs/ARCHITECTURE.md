@@ -11,7 +11,7 @@ src/app ───────► src/features ───────► src/data 
    └──► src/ui ◄─────┘
 ```
 
-Arrows mean "may import". `src/features` arrives in Phase 4 and `src/data` in Phase 3.
+Arrows mean "may import". `src/features` arrives in Phase 4.
 
 | Layer          | Job                                                      | May import                   |
 | -------------- | -------------------------------------------------------- | ---------------------------- |
@@ -65,6 +65,53 @@ tournament matches (not quick matches) for leaderboards.
 Playoffs are a `Bracket` (fixtures whose teams come from standings positions or earlier results)
 resolved against the current rankings and winners; nothing about the bracket is stored except who
 won each fixture.
+
+## Data: Firebase Realtime Database
+
+`src/data` is the only code that imports Firebase. Screens get a `DataLayer` from
+`createDataLayer()` and never see a database path.
+
+```
+/roles/{uid}               'admin' (the owner is set by hand in the console)
+/tournaments/{tid}         name, status, overs, playoff format, playoff winners
+/teams/{teamId}            name, tournamentId, group, captainId, players
+/matches/{mid}/meta        setup: teams, squads, overs, toss, locked
+/matches/{mid}/head        number of events
+/matches/{mid}/events/{n}  the event log, keys "0".."head-1"
+/matchSummaries/{mid}      small live score for lists (status, totals, result)
+/matchResults/{mid}        CompletedMatch record for standings and leaderboards
+/scorerCodes/{mid}         the match's scorer code (admins only)
+/scorers/{mid}/{uid}       scorers who redeemed the code
+```
+
+- **Who can do what** is decided by [`firebase/database.rules.json`](../firebase/database.rules.json),
+  not by the app. Viewers read without signing in. Admins sign in with Google or Apple and hold a
+  role in `/roles`. Scorers get an anonymous session and redeem a 10-character code; the rules
+  compare the code they saved with the current one, so issuing a new code or revoking it removes
+  every scorer at once.
+- **Events are append-only.** A scorer may only write event `head` while moving `head` to `head+1`,
+  or remove the last event while moving `head` back (undo). Two scorers appending at once cannot
+  both succeed; the loser gets `permission_denied` and retries on the new head.
+- **Every record is validated twice**: by the rules on write, and by the zod schemas in
+  `schemas.ts` on read. Records that fail are reported (`invalid`), never shown.
+- **Summaries and results are derived.** The scorer's device publishes them from the replayed
+  state; anyone can recompute them from the events.
+
+| File                | Contains                                                         |
+| ------------------- | ---------------------------------------------------------------- |
+| `schemas.ts`        | zod schemas for every stored record                              |
+| `records.ts`        | Conversions between stored records and domain types              |
+| `repositories/*.ts` | Typed reads, writes and live subscriptions, one file per area    |
+| `auth.ts`           | Sign-in for admins and scorers; the current session and its role |
+| `firebase.ts`       | The single Firebase connection (emulator when configured)        |
+| `errors.ts`         | `DataError` with a `code` the screens can show a message for     |
+
+Two rules files exist until the new app replaces the old one: `firebase/legacy.rules.json` is what
+production runs today (used by `firebase deploy`), and `firebase/database.rules.json` is the new
+schema (used by the emulator and the tests). Deploying the new rules is part of the cutover.
+
+Emulator tests (`*.emulator.test.ts`) exercise the rules and the repositories against a local
+Firebase: `npm run test:rules`. They need Java 21+.
 
 ## Conventions
 

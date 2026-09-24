@@ -64,6 +64,12 @@ firebase deploy --only hosting    # serves legacy/
 firebase deploy --only database   # firebase/database.rules.json
 ```
 
+## Security
+
+Found a vulnerability? Please report it privately; see [`SECURITY.md`](SECURITY.md). Every pull
+request runs static analysis, secret scanning and dependency checks; the threat model is in
+[`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md).
+
 ## Contributing
 
 1. Branch from `main` (`feature/<name>`).

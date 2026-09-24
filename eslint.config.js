@@ -4,7 +4,8 @@ const expoConfig = require('eslint-config-expo/flat');
 const prettierRecommended = require('eslint-plugin-prettier/recommended');
 
 /** Import boundaries between layers. See docs/ARCHITECTURE.md. */
-const layer = (name) => [`@/${name}`, `@/${name}/**`, `**/${name}`, `**/${name}/**`];
+const layer = (name) =>
+  [`@/${name}`, `**/../${name}`, `**/src/${name}`].flatMap((path) => [path, `${path}/**`]);
 const frameworks = [
   'react',
   'react/**',

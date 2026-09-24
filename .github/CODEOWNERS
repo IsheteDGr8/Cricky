@@ -1,0 +1,7 @@
+# Every change needs the owner's review. Security-sensitive paths are listed explicitly
+# so they stay protected if more maintainers are added later.
+*                         @IsheteDGr8
+/firebase/                @IsheteDGr8
+/.github/                 @IsheteDGr8
+/src/data/                @IsheteDGr8
+/.gitleaks.toml           @IsheteDGr8

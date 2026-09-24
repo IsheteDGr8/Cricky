@@ -1,0 +1,15 @@
+# Compatible with gitleaks 8.24+ (CI) and 8.30+ (local).
+# Firebase web API keys and Auth UIDs are public identifiers, not credentials.
+title = "Cricky"
+
+[extend]
+useDefault = true
+
+# Legacy single allowlist block (required by gitleaks 8.24 used in gitleaks-action@v3 default).
+[allowlist]
+description = "Public Firebase identifiers and rules file"
+paths = ['''(^|/)firebase/legacy\.rules\.json$''']
+regexes = [
+  '''AIzaSyAzIFrKBsY2iwHRdFAPzE4NrincGKv8iyE''',
+  '''vJQmdPwLdENXGqOcZJzPNZE39AD3''',
+]
