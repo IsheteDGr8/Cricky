@@ -5,6 +5,7 @@ import {
   target,
   ballsRemaining,
   type InningsState,
+  type MatchEvent,
   type MatchState,
   type PlayerId,
   type TeamId,
@@ -15,6 +16,9 @@ import { toMatchSetup, type MatchMeta, type MatchSnapshot } from '@/data';
 export interface MatchView {
   id: string;
   meta: MatchMeta;
+  /** Next event's sequence number; needed to append or undo. */
+  head: number;
+  events: MatchEvent[];
   state: MatchState;
   /** Innings in which at least one batter has come in, in playing order. */
   innings: InningsState[];
@@ -57,6 +61,8 @@ export function buildMatchView(snapshot: MatchSnapshot): MatchView {
   return {
     id: snapshot.id,
     meta: snapshot.meta,
+    head: snapshot.head,
+    events: snapshot.events,
     state,
     innings,
     live,

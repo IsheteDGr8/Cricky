@@ -12,6 +12,7 @@ export {
   type DataTableProps,
 } from './components/DataTable';
 export { EmptyState, type EmptyStateProps } from './components/EmptyState';
+export { Field, type FieldProps } from './components/Field';
 export { LoadingState, type LoadingStateProps } from './components/LoadingState';
 export { Screen, type ScreenProps } from './components/Screen';
 export { SegmentedControl, type SegmentedControlProps } from './components/SegmentedControl';

@@ -141,9 +141,17 @@ React. Data the view can't use (an unreadable record, an impossible playoff winn
 | `share.ts`, `ShareButton.tsx` | Share a link to a screen (copies it on browsers without a sheet) |
 | `matches/`                    | `useMatch`, match cards, score header, scorecard, commentary     |
 | `tournaments/`                | `useTournament`, standings, playoffs, leaders, squads            |
+| `scoring/`                    | Scorer pad: commit an event, undo, extras, wickets, codes        |
+| `admin/`                      | Forms to create tournaments, teams, fixtures and quick matches   |
+| `session.ts`                  | Who is signed in, and whether they are an admin                  |
 
-Every screen has its own URL (`/tournament/{id}`, `/match/{id}`), so shared links open the same
-screen on the web today and in the apps once deep links are set up.
+Every screen has its own URL (`/tournament/{id}`, `/match/{id}`, `/score/{id}`, `/admin`), so
+shared links open the same screen on the web and, with the `cricky://` scheme (and later
+Universal / App Links), in the apps.
+
+Scorers open `/score/{id}` and redeem a 10-character code (admins skip the code). Each legal
+event is checked by the engine, then written; the summary (and the result, once the match is
+over) is published from the replayed state. The match locks after Player of the Match is set.
 
 To try the screens with real data on your machine:
 
@@ -155,6 +163,11 @@ npm run web:emulator                                # terminal 2
 
 The `.migrated.json` file comes from `npm run migrate:dry-run` (see [MIGRATION.md](MIGRATION.md)).
 The seed also adds a copy of a recent match, part-way through, as `demo-live`.
+
+Universal Links and Android App Links are declared in `app.json` and
+`public/.well-known/`. Fill in the Apple team id and the Android signing
+fingerprint before store release; until then `cricky://match/{id}` works on
+devices that have the app.
 
 ## Conventions
 

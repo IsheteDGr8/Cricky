@@ -128,10 +128,30 @@ export function fakeDataLayer(
     return found;
   };
   const layer = {
+    auth: {
+      watchSession: (onChange: (session: null) => void) => {
+        onChange(null);
+        return () => {};
+      },
+      ensureSignedIn: async () => 'uid',
+      signInWithGooglePopup: async () => {},
+      signOut: async () => {},
+    },
+    access: {
+      redeemScorerCode: async () => {},
+      hasRedeemed: async () => false,
+      issueScorerCode: async () => 'ABCDEFGHJK',
+    },
     tournaments: {
       watchAll: (l: Listener<WithId<Tournament>[]>) => answer(() => data.tournaments ?? [])(l),
       watch: (id: string, l: Listener<WithId<Tournament>>) => answer(() => find(id))(l),
       watchTeams: (_: string, l: Listener<WithId<Team>[]>) => answer(() => data.teams ?? [])(l),
+      create: async () => 't-new',
+      update: async () => {},
+      saveTeam: async () => 'team',
+      removeTeam: async () => {},
+      remove: async () => {},
+      setPlayoffWinner: async () => {},
     },
     matches: {
       watch: (id: string, l: Listener<MatchSnapshot>) => answer(() => match(id))(l),
@@ -139,6 +159,14 @@ export function fakeDataLayer(
         answer(() => data.summaries ?? listed<MatchSummary>([]))(l),
       watchResults: (_: string, l: Listener<Listed<MatchResultRecord>>) =>
         answer(() => data.results ?? listed<MatchResultRecord>([]))(l),
+      append: async () => {},
+      undo: async () => {},
+      publishSummary: async () => {},
+      publishResult: async () => {},
+      clearResult: async () => {},
+      setLocked: async () => {},
+      create: async () => 'm-new',
+      remove: async () => {},
     },
   };
   return layer as unknown as DataLayer;

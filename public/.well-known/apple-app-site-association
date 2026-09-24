@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["XXXXXXXXXX.com.ishete.cricky"],
+        "paths": ["/match/*", "/tournament/*", "/score/*"]
+      }
+    ]
+  }
+}

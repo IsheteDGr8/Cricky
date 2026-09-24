@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
 
+import { ev } from '@/domain/__fixtures__/scoring';
 import type { MatchResultRecord, MatchSummary } from '@/data';
 import { AppThemeProvider } from '@/ui';
 import {
@@ -11,6 +12,7 @@ import {
   MatchCard,
   Playoffs,
   ScoreHeader,
+  ScorePad,
   Scorecard,
   Standings,
   useMatch,
@@ -101,6 +103,28 @@ describe('match components', () => {
     expect(names).toEqual(['Eagles', 'Huskies']);
     await fireEvent.press(screen.getByRole('button'));
     expect(onPress).toHaveBeenCalled();
+  });
+});
+
+describe('score pad', () => {
+  it('offers runs when the next action is a delivery', async () => {
+    const live = fakeDataLayer({
+      matches: { live: snapshot([ev.openers('a1', 'a2'), ev.bowler('b1')], 'live') },
+    });
+    function Pad() {
+      const match = useMatch('live');
+      return <Loaded value={match}>{(view) => <ScorePad view={view} />}</Loaded>;
+    }
+    await render(
+      <DataProvider value={live}>
+        <AppThemeProvider scheme="light">
+          <Pad />
+        </AppThemeProvider>
+      </DataProvider>,
+    );
+    expect(await screen.findByText('This ball')).toBeTruthy();
+    expect(screen.getByLabelText('4')).toBeTruthy();
+    await fireEvent.press(screen.getByLabelText('4'));
   });
 });
 

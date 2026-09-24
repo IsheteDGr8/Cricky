@@ -19,3 +19,23 @@ export { Standings } from './tournaments/Standings';
 export { TournamentCard } from './tournaments/TournamentCard';
 export { useTournament, useTournaments } from './tournaments/hooks';
 export type { GroupTable, TournamentView } from './tournaments/tournament-view';
+
+export { useSession, isStaff } from './session';
+export { confirmAction } from './confirm';
+export { newRecordId } from './ids';
+
+export { CodeEntry } from './scoring/CodeEntry';
+export { ScorePad } from './scoring/ScorePad';
+export { commitEvent, commitUndo, parseMatchRef, publishDerived } from './scoring/commit';
+export { useRedeemCode, useScoreActions } from './scoring/hooks';
+
+export { useAdminSignIn, useIsStaff } from './admin/hooks';
+export {
+  parseMatchForm,
+  parsePlayerNames,
+  parseQuickTeams,
+  parseTeamForm,
+  parseTournamentForm,
+} from './admin/forms';
+export type { PlayoffFormat, Stage } from '@/data';
+export type { TossDecision } from '@/domain';

@@ -35,6 +35,13 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="match/[id]" options={{ title: 'Match' }} />
             <Stack.Screen name="tournament/[id]" options={{ title: 'Tournament' }} />
+            <Stack.Screen name="score/index" options={{ title: 'Score a match' }} />
+            <Stack.Screen name="score/[id]" options={{ title: 'Score' }} />
+            <Stack.Screen name="admin/index" options={{ title: 'Admin' }} />
+            <Stack.Screen name="admin/tournament/new" options={{ title: 'New tournament' }} />
+            <Stack.Screen name="admin/tournament/[id]" options={{ title: 'Edit tournament' }} />
+            <Stack.Screen name="admin/match/new" options={{ title: 'Start a match' }} />
+            <Stack.Screen name="admin/match/quick" options={{ title: 'Quick match' }} />
             <Stack.Screen name="+not-found" options={{ title: 'Not found' }} />
           </Stack>
         </ThemeProvider>

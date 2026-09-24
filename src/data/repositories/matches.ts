@@ -173,6 +173,8 @@ export function createMatchRepository(ctx: DataContext) {
           ...(meta.tournamentId ? { tournamentId: meta.tournamentId } : {}),
           teamA: meta.teamA,
           teamB: meta.teamB,
+          teamAName: meta.teams[meta.teamA]?.name ?? meta.teamA,
+          teamBName: meta.teams[meta.teamB]?.name ?? meta.teamB,
           status: summary.status,
           innings: summary.innings,
           result: summary.result ?? null,
@@ -190,6 +192,15 @@ export function createMatchRepository(ctx: DataContext) {
         await set(ref(db, paths.matchResult(id)), record);
       } catch (error) {
         throw toWriteError(error, 'The match result was not saved');
+      }
+    },
+
+    /** Scorer: drops the standings record after an undo that reopens the match. */
+    async clearResult(id: string): Promise<void> {
+      try {
+        await set(ref(db, paths.matchResult(id)), null);
+      } catch (error) {
+        throw toWriteError(error, 'The match result was not cleared');
       }
     },
 
