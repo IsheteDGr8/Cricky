@@ -64,10 +64,7 @@ export interface ParsedBall {
  * The label says what happened; the text says who bowled, who faced and, for wickets, who was out.
  */
 export function parseBall(entry: BallEntry, bowling: Roster, batting: Roster): ParsedBall {
-  const text = entry.text
-    .replace(/<[^>]*>/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  const text = stripMarkup(entry.text).replace(/\s+/g, ' ').trim();
   const head = new RegExp(
     `^(${bowling.pattern}) to (?:Captain )?(${batting.pattern})\\. (.*)$`,
   ).exec(text);
@@ -155,6 +152,18 @@ function parseWicket(
     };
   }
   throw new Error(`Unrecognised wicket: "${text}"`);
+}
+
+/** v1 wraps wickets in a styled span. Walk characters so we never use a tag regex. */
+function stripMarkup(text: string): string {
+  let out = '';
+  let depth = 0;
+  for (const ch of text) {
+    if (ch === '<') depth += 1;
+    else if (ch === '>' && depth > 0) depth -= 1;
+    else if (depth === 0) out += ch;
+  }
+  return out;
 }
 
 function normalize(name: string): string {

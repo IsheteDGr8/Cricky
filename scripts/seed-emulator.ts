@@ -5,6 +5,7 @@
  *   npm run emulators:seed -- backups/rtdb-2026-09-23-1147.migrated.json
  */
 import { readFileSync } from 'node:fs';
+import { basename, resolve, sep } from 'node:path';
 import { replay, scoreSummary } from '@/domain';
 import { toDomainEvent, toMatchSetup } from '@/data/records';
 import type { MigratedDatabase } from './migrate-legacy/migrate';
@@ -13,13 +14,19 @@ const EMULATOR = 'http://127.0.0.1:9000';
 /** The namespace the app uses against the emulator (see src/data/firebase.ts). */
 const NAMESPACE = 'demo-cricky-default-rtdb';
 const LIVE_ID = 'demo-live';
+const BACKUPS = resolve('backups');
 
 const file = process.argv[2];
 if (!file) {
-  console.error('Usage: npm run emulators:seed -- <path to .migrated.json>');
+  console.error('Usage: npm run emulators:seed -- backups/<file>.migrated.json');
   process.exit(2);
 }
-const data = JSON.parse(readFileSync(file, 'utf8')) as MigratedDatabase;
+const abs = resolve(file);
+if (!abs.startsWith(BACKUPS + sep) || !basename(abs).endsWith('.migrated.json')) {
+  console.error('Seed only from backups/*.migrated.json (local emulator, never production).');
+  process.exit(2);
+}
+const data = JSON.parse(readFileSync(abs, 'utf8')) as MigratedDatabase;
 
 // A copy of the most recent completed match, stopped two thirds of the way through.
 const [sourceId, source] = Object.entries(data.matches)
@@ -56,10 +63,15 @@ if (sourceId && source) {
 }
 
 async function upload() {
+  // Local emulator only (hard-coded 127.0.0.1). CodeQL flags file→HTTP; this
+  // is a developer seed, not a user-facing request.
+  // codeql[js/file-access-to-http]
   const response = await fetch(`${EMULATOR}/.json?ns=${NAMESPACE}`, {
     method: 'PUT',
     // The emulator treats "Bearer owner" as an admin that bypasses the rules.
     headers: { Authorization: 'Bearer owner', 'Content-Type': 'application/json' },
+    // Local emulator seed only — never a user-facing request.
+    // codeql[js/file-access-to-http]
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error(`${response.status} ${await response.text()}`);
