@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   codeql:
-    name: CodeQL (static analysis)
+    name: CodeQL
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -42,7 +42,7 @@ jobs:
           category: /language:javascript-typescript
 
   secrets:
-    name: Secret scan (gitleaks)
+    name: Secret Scan
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
