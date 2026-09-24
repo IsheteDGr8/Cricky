@@ -16,6 +16,7 @@ import { confirmAction } from '../confirm';
 import { useScoreActions } from './hooks';
 import { PlayerPicker } from './PlayerPicker';
 import { AddPlayerSheet, ExtraSheet, OversSheet, WicketSheet } from './Sheets';
+import { SyncBanner } from './SyncBanner';
 
 type Sheet = 'extra' | 'wicket' | 'overs' | 'add' | null;
 type ExtraSheetKind = ExtraType;
@@ -26,14 +27,16 @@ const RUNS = [0, 1, 2, 3, 4, 5, 6] as const;
 export function ScorePad({ view }: { view: MatchView }) {
   const { spacing } = useTheme();
   const actions = useScoreActions(view);
+  const shown = actions.view;
   const [sheet, setSheet] = useState<Sheet>(null);
   const [extra, setExtra] = useState<ExtraSheetKind>('wide');
-  const action = nextAction(view.state);
-  const disabled = actions.busy || view.meta.locked;
+  const action = nextAction(shown.state);
+  const disabled = actions.busy || shown.meta.locked;
 
   return (
     <View style={{ gap: spacing.md }}>
-      {view.meta.locked ? (
+      <SyncBanner status={actions.status} queued={actions.queued} />
+      {shown.meta.locked ? (
         <Card>
           <Text color="warning">This match is locked. An admin can unlock it to keep scoring.</Text>
         </Card>
@@ -44,13 +47,13 @@ export function ScorePad({ view }: { view: MatchView }) {
         </Card>
       ) : null}
 
-      {action === 'set_openers' && <Openers view={view} disabled={disabled} send={actions.send} />}
-      {action === 'set_bowler' && <Bowler view={view} disabled={disabled} send={actions.send} />}
+      {action === 'set_openers' && <Openers view={shown} disabled={disabled} send={actions.send} />}
+      {action === 'set_bowler' && <Bowler view={shown} disabled={disabled} send={actions.send} />}
       {action === 'new_batter' && (
-        <NextBatter view={view} disabled={disabled} send={actions.send} />
+        <NextBatter view={shown} disabled={disabled} send={actions.send} />
       )}
       {action === 'set_player_of_match' && (
-        <Potm view={view} disabled={disabled} send={actions.send} />
+        <Potm view={shown} disabled={disabled} send={actions.send} />
       )}
       {action === 'none' && (
         <Card>
@@ -67,6 +70,7 @@ export function ScorePad({ view }: { view: MatchView }) {
                 <Button
                   key={n}
                   label={String(n)}
+                  accessibilityLabel={n === 1 ? '1 run' : `${n} runs`}
                   disabled={disabled}
                   onPress={() => actions.send({ type: 'delivery', runs: n })}
                 />
@@ -133,7 +137,7 @@ export function ScorePad({ view }: { view: MatchView }) {
       )}
       {sheet === 'wicket' && (
         <Wicket
-          view={view}
+          view={shown}
           disabled={disabled}
           send={actions.send}
           onClose={() => setSheet(null)}
@@ -141,7 +145,7 @@ export function ScorePad({ view }: { view: MatchView }) {
       )}
       {sheet === 'overs' && (
         <OversSheet
-          current={view.state.oversPerInnings}
+          current={shown.state.oversPerInnings}
           disabled={disabled}
           onCancel={() => setSheet(null)}
           onConfirm={(overs) => {
@@ -153,8 +157,8 @@ export function ScorePad({ view }: { view: MatchView }) {
       {sheet === 'add' && (
         <AddPlayerSheet
           teams={[
-            { id: view.meta.teamA, name: view.teamName(view.meta.teamA) },
-            { id: view.meta.teamB, name: view.teamName(view.meta.teamB) },
+            { id: shown.meta.teamA, name: shown.teamName(shown.meta.teamA) },
+            { id: shown.meta.teamB, name: shown.teamName(shown.meta.teamB) },
           ]}
           disabled={disabled}
           onCancel={() => setSheet(null)}
@@ -192,6 +196,7 @@ export function ScorePad({ view }: { view: MatchView }) {
           {action === 'delivery' ? (
             <Button
               label="End innings"
+              accessibilityHint="Ends the batting side and starts the next innings or the result"
               variant="secondary"
               disabled={disabled}
               onPress={() => {
@@ -211,13 +216,13 @@ export function ScorePad({ view }: { view: MatchView }) {
           <Button
             label="Change overs"
             variant="ghost"
-            disabled={disabled || view.state.status === 'complete'}
+            disabled={disabled || shown.state.status === 'complete'}
             onPress={() => setSheet('overs')}
           />
           <Button
             label="Add player"
             variant="ghost"
-            disabled={disabled || view.state.status === 'complete'}
+            disabled={disabled || shown.state.status === 'complete'}
             onPress={() => setSheet('add')}
           />
         </View>

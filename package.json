@@ -22,12 +22,14 @@
     "test:rules": "firebase emulators:exec --config firebase.emulator.json --project demo-cricky --only auth,database \"npm run test:emulator\"",
     "migrate:dry-run": "tsx scripts/migrate-legacy/cli.ts",
     "emulators:seed": "tsx scripts/seed-emulator.ts",
+    "load-test": "tsx scripts/load-test-viewers.ts",
     "web:emulator": "cross-env EXPO_PUBLIC_FIREBASE_EMULATOR_HOST=127.0.0.1 expo start --web",
     "prepare": "husky"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@sentry/react-native": "~7.11.0",
     "expo": "~57.0.24",
     "expo-constants": "~57.0.19",
     "expo-crypto": "~57.0.3",

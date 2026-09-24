@@ -1,6 +1,8 @@
 export { AppThemeProvider, buildTheme, useTheme, type Theme } from './theme';
 export * from './tokens';
 export { useColorScheme } from './use-color-scheme';
+export { useReducedMotion } from './use-reduced-motion';
+export { VirtualList, type VirtualListProps } from './components/VirtualList';
 export { Badge, type BadgeProps, type BadgeTone } from './components/Badge';
 export { BallChip, type BallChipProps, type BallTone } from './components/BallChip';
 export { Button, type ButtonProps, type ButtonVariant } from './components/Button';

@@ -1,8 +1,10 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-import { DataProvider } from '@/features';
+import { DataProvider, initMonitoring } from '@/features';
 import { AppThemeProvider, buildTheme, useColorScheme } from '@/ui';
+
+initMonitoring();
 
 function useNavigationTheme() {
   const scheme = useColorScheme();

@@ -33,7 +33,7 @@ The app stores no sensitive personal data: player names only, no emails of viewe
 | **Tampering:** write malformed data to crash viewers        | `.validate` rules on every field; zod validation when reading; the engine rejects illegal event sequences.                                |
 | **Repudiation:** "I didn't score that"                      | Every event stores `by` (uid) and `at` (server timestamp).                                                                                |
 | **Information disclosure:** read scorer codes or roles      | `scorerCodes` readable only by admins; each `roles` entry readable only by that user and the owner.                                       |
-| **Denial of service / bill:** scripted mass reads or writes | App Check (only genuine apps), small event-based payloads, $1 budget alert, rules cap string lengths and list sizes.                      |
+| **Denial of service / bill:** scripted mass reads or writes | App Check (wired; enforce after cutover), small event-based payloads, $1 budget alert, rules cap string lengths and list sizes.           |
 | **Elevation of privilege:** scorer edits another match      | Write rules check `/scorers/{matchId}/{uid}` for that specific match.                                                                     |
 | **Supply chain:** malicious npm package or GitHub Action    | Lockfile installs, `npm audit signatures`, dependency review, Dependabot, actions pinned to commit SHAs, least-privilege workflow tokens. |
 | **Leaked secret in git**                                    | gitleaks on every push and PR, GitHub push protection, no service-account keys in the repo.                                               |

@@ -1,5 +1,5 @@
 import { generateScorerCode, normalizeScorerCode } from '../codes';
-import { DataError, isPermissionDenied, toWriteError } from '../errors';
+import { DataError, isPermissionDenied, isUnavailable, toWriteError } from '../errors';
 import { SCORER_CODE_ALPHABET, ScorerCodeSchema } from '../schemas';
 
 const bytes =
@@ -53,5 +53,12 @@ describe('errors', () => {
     expect((denied as DataError).code).toBe('permission_denied');
     const other = new Error('offline');
     expect(toWriteError(other, 'nope')).toBe(other);
+  });
+
+  it('recognises transport failures so the scorer can queue', () => {
+    expect(isUnavailable({ code: 'unavailable' })).toBe(true);
+    expect(isUnavailable({ code: 'network-request-failed' })).toBe(true);
+    expect(isUnavailable(new Error('Failed to fetch'))).toBe(true);
+    expect(isUnavailable({ code: 'PERMISSION_DENIED' })).toBe(false);
   });
 });

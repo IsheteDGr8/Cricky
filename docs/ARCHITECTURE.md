@@ -104,6 +104,8 @@ won each fixture.
 | `repositories/*.ts` | Typed reads, writes and live subscriptions, one file per area    |
 | `auth.ts`           | Sign-in for admins and scorers; the current session and its role |
 | `firebase.ts`       | The single Firebase connection (emulator when configured)        |
+| `app-check.ts`      | Optional App Check (web reCAPTCHA); skipped on emulator          |
+| `connection.ts`     | `.info/connected` so the pad can queue when offline              |
 | `errors.ts`         | `DataError` with a `code` the screens can show a message for     |
 
 Two rules files exist until the new app replaces the old one: `firebase/legacy.rules.json` is what
@@ -141,7 +143,8 @@ React. Data the view can't use (an unreadable record, an impossible playoff winn
 | `share.ts`, `ShareButton.tsx` | Share a link to a screen (copies it on browsers without a sheet) |
 | `matches/`                    | `useMatch`, match cards, score header, scorecard, commentary     |
 | `tournaments/`                | `useTournament`, standings, playoffs, leaders, squads            |
-| `scoring/`                    | Scorer pad: commit an event, undo, extras, wickets, codes        |
+| `scoring/`                    | Scorer pad: commit, undo, extras, wickets, codes, offline queue  |
+| `monitoring.ts`               | Optional Sentry (`EXPO_PUBLIC_SENTRY_DSN`)                       |
 | `admin/`                      | Forms to create tournaments, teams, fixtures and quick matches   |
 | `session.ts`                  | Who is signed in, and whether they are an admin                  |
 

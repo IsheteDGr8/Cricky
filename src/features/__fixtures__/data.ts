@@ -153,6 +153,7 @@ export function fakeDataLayer(
       remove: async () => {},
       setPlayoffWinner: async () => {},
     },
+    watchConnection: (l: Listener<boolean>) => answer(() => true)(l),
     matches: {
       watch: (id: string, l: Listener<MatchSnapshot>) => answer(() => match(id))(l),
       watchSummaries: (_: unknown, l: Listener<Listed<MatchSummary>>) =>

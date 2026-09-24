@@ -48,5 +48,5 @@ export function Screen({ title, subtitle, children, scroll = true, edges = ['top
 const styles = StyleSheet.create({
   root: { flex: 1 },
   scroll: { flexGrow: 1, alignItems: 'center' },
-  inner: { width: '100%', maxWidth: maxContentWidth, flexGrow: 1 },
+  inner: { width: '100%', maxWidth: maxContentWidth, flexGrow: 1, flex: 1 },
 });
