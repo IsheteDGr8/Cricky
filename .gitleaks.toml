@@ -1,22 +1,15 @@
-# https://github.com/gitleaks/gitleaks#configuration
+# Compatible with gitleaks 8.24+ (CI) and 8.30+ (local).
+# Firebase web API keys and Auth UIDs are public identifiers, not credentials.
 title = "Cricky"
 
 [extend]
 useDefault = true
 
-[[allowlists]]
-id = "firebase-web-api-key"
-description = "Firebase web API key: public by design (identifies the project; access is enforced by database rules and App Check)"
-regexTarget = "match"
-regexes = ['''AIzaSyAzIFrKBsY2iwHRdFAPzE4NrincGKv8iyE''']
-
-[[allowlists]]
-id = "firebase-admin-uid"
-description = "Firebase Auth UIDs in database rules are identifiers, not credentials"
-regexTarget = "match"
-regexes = ['''vJQmdPwLdENXGqOcZJzPNZE39AD3''']
-
-[[allowlists]]
-id = "firebase-rules-file"
-description = "Entire database rules file is allowlisted; it only contains public path rules and Auth UIDs"
+# Legacy single allowlist block (required by gitleaks 8.24 used in gitleaks-action@v3 default).
+[allowlist]
+description = "Public Firebase identifiers and rules file"
 paths = ['''(^|/)firebase/database\.rules\.json$''']
+regexes = [
+  '''AIzaSyAzIFrKBsY2iwHRdFAPzE4NrincGKv8iyE''',
+  '''vJQmdPwLdENXGqOcZJzPNZE39AD3''',
+]
