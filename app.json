@@ -11,7 +11,9 @@
       "bundleIdentifier": "com.ishete.cricky",
       "supportsTablet": true,
       "icon": "./assets/expo.icon",
-      "config": { "usesNonExemptEncryption": false },
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "associatedDomains": ["applinks:cricky-cricket-analysis.web.app"]
     },
     "android": {

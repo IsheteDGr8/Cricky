@@ -288,7 +288,7 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 - [x] `database.rules.json` rewritten with validation; emulator rules tests (run in CI).
 - [x] Auth: Google + Apple sign-in for admins; anonymous sessions for scorers; scorer-code redemption.
 - [x] Repositories (typed read/write, live subscriptions), tested end to end against the emulator.
-- [ ] Owner: enable the Anonymous, Google and Apple providers in Firebase Auth (needed before cutover).
+  - [x] Owner: enable Anonymous and Google in Firebase Auth (Apple later, with the friend's Developer account).
 - [x] Migration script (old → new) with dry run, verified against the backup: replay old ball history into events; rebuild summaries and results; compare totals with the old data. See [`MIGRATION.md`](MIGRATION.md).
 
 ### Phase 4: Features
@@ -300,14 +300,14 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 
 ### Phase 5: Hardening
 
-- [ ] App Check on all platforms, then enforce.
-- [ ] Sentry integration.
-- [ ] Offline scoring (queued writes plus a visible sync status).
-- [ ] Performance: list virtualization, memoization, subscription cleanup.
-- [ ] Accessibility pass.
-- [ ] Load test: script 150+ simultaneous viewers against a live match; confirm bandwidth per viewer stays small.
-- [ ] Security review of rules and auth flows against the OWASP MASVS (mobile) and ASVS Level 1 (web) checklists.
-- [ ] Content-Security-Policy for the new web app (report-only first, then enforced).
+- [x] App Check wired for web (reCAPTCHA Enterprise) when `EXPO_PUBLIC_RECAPTCHA_SITE_KEY` is set. Debug token opt-in. **Do not enforce** on the live database until cutover (v1 has no token).
+- [x] Sentry integration (`EXPO_PUBLIC_SENTRY_DSN`; no-ops until set).
+- [x] Offline scoring (queued writes plus a visible sync status).
+- [x] Performance: list virtualization, memoized cards, subscription cleanup on unmount.
+- [x] Accessibility pass (44pt targets, run labels, live sync status, reduced-motion hook).
+- [x] Load test: `npm run load-test` opens 150+ emulator viewers on one match.
+- [x] Security review of rules and auth flows against OWASP MASVS and ASVS Level 1 ([`SECURITY_REVIEW.md`](SECURITY_REVIEW.md)).
+- [x] Content-Security-Policy-Report-Only on Hosting (enforce after the Expo web export replaces `legacy/`).
 
 ### Phase 6: Release
 

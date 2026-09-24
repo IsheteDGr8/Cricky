@@ -1,5 +1,6 @@
 import { createAuthService } from './auth';
-import type { DataContext } from './context';
+import { watchConnection } from './connection';
+import type { DataContext, Listener, Unsubscribe } from './context';
 import { getBackend, type Backend } from './firebase';
 import { secureRandomBytes } from './random';
 import { createAccessRepository } from './repositories/access';
@@ -18,6 +19,8 @@ export function createDataLayer(backend: Backend = getBackend()) {
     access,
     tournaments: createTournamentRepository(ctx),
     matches: createMatchRepository(ctx),
+    watchConnection: (listener: Listener<boolean>): Unsubscribe =>
+      watchConnection(backend.db, listener),
   };
 }
 
@@ -25,7 +28,7 @@ export type DataLayer = ReturnType<typeof createDataLayer>;
 
 export type { Session, AuthService } from './auth';
 export type { Listener, Unsubscribe } from './context';
-export { DataError, type DataErrorCode } from './errors';
+export { DataError, isUnavailable, type DataErrorCode } from './errors';
 export { normalizeScorerCode } from './codes';
 export { toCompletedMatch, toMatchSetup } from './records';
 export type { AccessRepository } from './repositories/access';

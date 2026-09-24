@@ -2,7 +2,7 @@ import type { FirebaseOptions } from 'firebase/app';
 
 /**
  * The Firebase web config is public by design: it only identifies the project.
- * Access is enforced by firebase/database.rules.json (and App Check, Phase 5).
+ * Access is enforced by firebase/database.rules.json (and App Check once a site key is set).
  */
 export const firebaseConfig: FirebaseOptions = {
   apiKey: 'AIzaSyAzIFrKBsY2iwHRdFAPzE4NrincGKv8iyE',

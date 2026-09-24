@@ -19,6 +19,7 @@ export function Card({ children, onPress, accessibilityLabel, style, testID }: C
     borderRadius: radius.lg,
     padding: spacing.lg,
     borderWidth: StyleSheet.hairlineWidth,
+    minHeight: onPress ? 44 : undefined,
   };
 
   if (!onPress) {

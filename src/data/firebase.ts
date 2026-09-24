@@ -1,6 +1,7 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth, initializeAuth, type Auth } from 'firebase/auth';
 import { connectDatabaseEmulator, getDatabase, type Database } from 'firebase/database';
+import { initAppCheck } from './app-check';
 import { authPersistence } from './auth-persistence';
 import { EMULATOR_PROJECT_ID, emulatorHost, firebaseConfig } from './config';
 
@@ -26,6 +27,7 @@ export function getBackend(): Backend {
     : firebaseConfig;
 
   const app = getApps().length ? getApp() : initializeApp(options);
+  void initAppCheck(app);
   const auth = initAuth(app);
   const db = getDatabase(app);
 

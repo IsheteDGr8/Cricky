@@ -1,4 +1,5 @@
 export { DataProvider, useDataLayer } from './data-provider';
+export { initMonitoring, reportError } from './monitoring';
 export { Loaded } from './Loaded';
 export { combine, mapLoadable, useSubscription, type Loadable } from './loadable';
 export { shareLink, type ShareOutcome } from './share';

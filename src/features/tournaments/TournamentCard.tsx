@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { View } from 'react-native';
 
 import type { Tournament, WithId } from '@/data';
@@ -11,7 +12,7 @@ const STATUS: Record<Tournament['status'], { label: string; tone: BadgeTone }> =
   archived: { label: 'Archived', tone: 'neutral' },
 };
 
-export function TournamentCard({
+export const TournamentCard = memo(function TournamentCard({
   tournament,
   onPress,
 }: {
@@ -35,4 +36,4 @@ export function TournamentCard({
       </View>
     </Card>
   );
-}
+});

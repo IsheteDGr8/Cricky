@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { View } from 'react-native';
 
 import type { MatchSummary, WithId } from '@/data';
@@ -16,7 +17,7 @@ const STAGE: Record<MatchSummary['stage'], string> = {
 };
 
 /** One match in a list: both teams, their scores and the result or live status. */
-export function MatchCard({ match, onPress }: MatchCardProps) {
+export const MatchCard = memo(function MatchCard({ match, onPress }: MatchCardProps) {
   const { spacing } = useTheme();
   const innings = match.innings ?? [];
   const teams = [
@@ -72,4 +73,4 @@ export function MatchCard({ match, onPress }: MatchCardProps) {
       </View>
     </Card>
   );
-}
+});

@@ -123,8 +123,8 @@ describe('score pad', () => {
       </DataProvider>,
     );
     expect(await screen.findByText('This ball')).toBeTruthy();
-    expect(screen.getByLabelText('4')).toBeTruthy();
-    await fireEvent.press(screen.getByLabelText('4'));
+    expect(screen.getByLabelText('4 runs')).toBeTruthy();
+    await fireEvent.press(screen.getByLabelText('4 runs'));
   });
 });
 
