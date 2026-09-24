@@ -21,6 +21,8 @@
     "test:emulator": "jest --config jest.emulator.config.js --runInBand",
     "test:rules": "firebase emulators:exec --config firebase.emulator.json --project demo-cricky --only auth,database \"npm run test:emulator\"",
     "migrate:dry-run": "tsx scripts/migrate-legacy/cli.ts",
+    "emulators:seed": "tsx scripts/seed-emulator.ts",
+    "web:emulator": "cross-env EXPO_PUBLIC_FIREBASE_EMULATOR_HOST=127.0.0.1 expo start --web",
     "prepare": "husky"
   },
   "dependencies": {
@@ -54,6 +56,7 @@
     "@types/jest": "29.5.14",
     "@types/node": "^24.13.6",
     "@types/react": "~19.2.2",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~57.0.2",
     "eslint-config-prettier": "^10.1.8",

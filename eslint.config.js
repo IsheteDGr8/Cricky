@@ -35,6 +35,10 @@ module.exports = defineConfig([
     },
   },
   {
+    files: ['scripts/**'],
+    rules: { 'no-console': 'off' },
+  },
+  {
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
@@ -54,6 +58,16 @@ module.exports = defineConfig([
     ['src/ui/**/*.{ts,tsx}'],
     [...firebase, ...['app', 'data', 'features', 'domain'].flatMap(layer)],
     'src/ui is the design system: presentational only, no app, data, feature or domain imports.',
+  ),
+  boundary(
+    ['src/app/**/*.{ts,tsx}'],
+    [...firebase, ...layer('data')],
+    'Screens get data through src/features hooks, not src/data directly.',
+  ),
+  boundary(
+    ['src/features/**/*.{ts,tsx}'],
+    [...firebase, ...layer('app')],
+    'src/features holds screen state and feature components; routes live in src/app.',
   ),
   boundary(
     ['src/data/**/*.ts'],

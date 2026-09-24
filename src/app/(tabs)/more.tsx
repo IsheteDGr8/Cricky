@@ -12,8 +12,15 @@ export default function MoreScreen() {
       <Card>
         <View style={{ gap: spacing.xs }}>
           <Text variant="heading">Admin & scoring</Text>
+          <Text color="textMuted">Scorer codes and admin sign-in arrive in the next releases.</Text>
+        </View>
+      </Card>
+      <Card>
+        <View style={{ gap: spacing.xs }}>
+          <Text variant="heading">Sharing</Text>
           <Text color="textMuted">
-            Sign-in for admins and scorer codes arrive in a later release.
+            Every match and tournament has its own link. Use Share on its page to send it; anyone
+            can follow along without signing in.
           </Text>
         </View>
       </Card>

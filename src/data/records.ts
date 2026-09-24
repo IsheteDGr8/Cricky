@@ -1,5 +1,6 @@
 import {
   summarizeMatch,
+  type CompletedMatch,
   type MatchEvent,
   type MatchSetup,
   type MatchState,
@@ -104,6 +105,21 @@ export function playerNames(
   for (const [pid, p] of Object.entries(meta.players)) names[pid] = p.name;
   for (const r of records) if (r.type === 'add_player') names[r.player] = r.playerName;
   return names;
+}
+
+/** A stored result as the input standings and leaderboards take. */
+export function toCompletedMatch(record: MatchResultRecord & { id: string }): CompletedMatch {
+  return {
+    id: record.id,
+    teamA: record.teamA,
+    teamB: record.teamB,
+    oversPerInnings: record.oversPerInnings,
+    result: record.result,
+    innings: record.innings,
+    batting: record.batting,
+    bowling: record.bowling,
+    playerOfMatch: record.playerOfMatch ?? null,
+  };
 }
 
 export function toMatchResultRecord(

@@ -1,11 +1,9 @@
 import {
+  bracketForFormat,
   computeStandings,
-  crossoverBracket,
-  finalOnlyBracket,
   resolveBracket,
   scoreSummary,
   summarizeMatch,
-  topFourBracket,
   type Bracket,
   type CompletedMatch,
   type TeamId,
@@ -132,7 +130,7 @@ export function migrateBackup(
     );
     const groups = [...new Set(tournamentTeams.map(([, t]) => t.group ?? 'A'))].sort();
     const format = playoffFormat(tournament, groups.length);
-    const bracket = bracketFor(format, groups, !!tournament.playoffs?.p3);
+    const bracket = bracketForFormat(format, groups, { thirdPlace: !!tournament.playoffs?.p3 });
 
     const groupResults: CompletedMatch[] = [];
     for (const [id, c] of converted) {
@@ -237,6 +235,8 @@ export function migrateBackup(
         ...(result.meta.tournamentId ? { tournamentId: result.meta.tournamentId } : {}),
         teamA: result.meta.teamA,
         teamB: result.meta.teamB,
+        teamAName: names[result.meta.teamA] ?? result.meta.teamA,
+        teamBName: names[result.meta.teamB] ?? result.meta.teamB,
         status: summary.status,
         updatedAt: match.timestamp,
         innings: summary.innings,
@@ -293,20 +293,6 @@ function playoffFormat(tournament: LegacyTournament, groupCount: number): Playof
   if (!p || (!p.p1 && !p.p2 && !p.pf)) return 'none';
   if (!p.p1 && !p.p2) return 'final_only';
   return groupCount >= 2 ? 'crossover' : 'top_four';
-}
-
-function bracketFor(format: PlayoffFormat, groups: string[], thirdPlace: boolean): Bracket | null {
-  const [first = 'A', second = 'B'] = groups;
-  switch (format) {
-    case 'crossover':
-      return crossoverBracket(first, second, { thirdPlace });
-    case 'top_four':
-      return topFourBracket(first, { thirdPlace });
-    case 'final_only':
-      return finalOnlyBracket(first);
-    case 'none':
-      return null;
-  }
 }
 
 /**

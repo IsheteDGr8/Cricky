@@ -1,4 +1,5 @@
 import {
+  bracketForFormat,
   crossoverBracket,
   finalOnlyBracket,
   resolveBracket,
@@ -95,5 +96,25 @@ describe('resolveBracket validation', () => {
       finalId: 'final',
     };
     expect(() => resolveBracket(bad, {}, {})).toThrow('Fixture semi must come before');
+  });
+});
+
+describe('bracketForFormat', () => {
+  const ids = (b: Bracket | null) => b?.fixtures.map((f) => f.id);
+
+  it('builds the bracket each format describes', () => {
+    expect(bracketForFormat('none', ['A'])).toBeNull();
+    expect(ids(bracketForFormat('final_only', ['A']))).toEqual(['final']);
+    expect(ids(bracketForFormat('top_four', ['A'], { thirdPlace: false }))).toEqual([
+      'semi-1',
+      'semi-2',
+      'final',
+    ]);
+  });
+
+  it('crosses over the first two groups it is given', () => {
+    const bracket = bracketForFormat('crossover', ['East', 'West']) as Bracket;
+    expect(bracket.fixtures[0]?.home).toEqual({ from: 'standings', group: 'East', position: 1 });
+    expect(bracket.fixtures[0]?.away).toEqual({ from: 'standings', group: 'West', position: 2 });
   });
 });

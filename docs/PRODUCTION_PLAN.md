@@ -293,7 +293,7 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 
 ### Phase 4: Features
 
-- [ ] Viewer: tournaments list, tournament detail (standings, matches, squads, stats, playoffs), match screen (live header, scorecard, commentary, summary), share.
+- [x] Viewer: tournaments list, tournament detail (standings, matches, squads, stats, playoffs), match screen (live header, scorecard, commentary, summary), share.
 - [ ] Scorer: code entry, player selection, scoring pad, wicket/extras sheets, undo, change overs, add player, end innings, Player of the Match.
 - [ ] Admin: create/edit/archive tournaments, teams and squads, fixtures, start tournament match, start quick match (typed player names, not saved as teams), manage scorers and codes, playoffs, delete with confirmation.
 - [ ] Deep links and Universal / App Links.

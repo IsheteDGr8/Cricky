@@ -27,7 +27,7 @@ export type { Session, AuthService } from './auth';
 export type { Listener, Unsubscribe } from './context';
 export { DataError, type DataErrorCode } from './errors';
 export { normalizeScorerCode } from './codes';
-export { toMatchSetup } from './records';
+export { toCompletedMatch, toMatchSetup } from './records';
 export type { AccessRepository } from './repositories/access';
 export type { MatchRepository, MatchSnapshot, NewMatch, Listed } from './repositories/matches';
 export type {

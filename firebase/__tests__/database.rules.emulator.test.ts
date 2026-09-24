@@ -372,6 +372,8 @@ describe('summaries and results', () => {
     tournamentId: 't1',
     teamA: 'A',
     teamB: 'B',
+    teamAName: 'Huskies',
+    teamBName: 'Eagles',
     status: 'live',
     innings: [{ battingTeam: 'A', runs: 12, wickets: 1, legalBalls: 9 }],
     updatedAt: NOW,

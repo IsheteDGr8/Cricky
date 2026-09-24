@@ -11,7 +11,7 @@ src/app ───────► src/features ───────► src/data 
    └──► src/ui ◄─────┘
 ```
 
-Arrows mean "may import". `src/features` arrives in Phase 4.
+Arrows mean "may import".
 
 | Layer          | Job                                                      | May import                   |
 | -------------- | -------------------------------------------------------- | ---------------------------- |
@@ -112,6 +112,49 @@ schema (used by the emulator and the tests). Deploying the new rules is part of 
 
 Emulator tests (`*.emulator.test.ts`) exercise the rules and the repositories against a local
 Firebase: `npm run test:rules`. They need Java 21+.
+
+## Features: from live data to a screen
+
+`src/features` turns subscriptions into what a screen shows. Every hook returns a `Loadable`
+(`loading`, `ready` with data, or `error`), and screens hand it to `<Loaded>`, which renders the
+spinner or error so no screen has to.
+
+```
+DataProvider (one DataLayer for the app; tests pass a fake)
+  └─ useSubscription(key, subscribe)     live value, re-subscribes when key changes
+       └─ combine / mapLoadable          wait for several, derive with src/domain
+            └─ useTournament(id)         → TournamentView: standings, bracket, leaders, matches
+            └─ useMatch(id)              → MatchView: replayed MatchState, live figures, names
+            └─ useRecentMatches()        → live / upcoming / finished summaries
+```
+
+The derivations (`buildTournamentView`, `buildMatchView`) are plain functions, tested without
+React. Data the view can't use (an unreadable record, an impossible playoff winner) is listed in
+`problems` and shown as a warning rather than failing the page.
+
+| Folder / file                 | Contains                                                         |
+| ----------------------------- | ---------------------------------------------------------------- |
+| `data-provider.tsx`           | `DataProvider`, `useDataLayer`                                   |
+| `loadable.ts`                 | `Loadable`, `useSubscription`, `combine`, `mapLoadable`          |
+| `Loaded.tsx`                  | Loading and error states for any `Loadable`                      |
+| `format.ts`                   | Scores, overs, rates, NRR and result text                        |
+| `share.ts`, `ShareButton.tsx` | Share a link to a screen (copies it on browsers without a sheet) |
+| `matches/`                    | `useMatch`, match cards, score header, scorecard, commentary     |
+| `tournaments/`                | `useTournament`, standings, playoffs, leaders, squads            |
+
+Every screen has its own URL (`/tournament/{id}`, `/match/{id}`), so shared links open the same
+screen on the web today and in the apps once deep links are set up.
+
+To try the screens with real data on your machine:
+
+```sh
+npm run emulators                                   # terminal 1 (needs Java 21+)
+npm run emulators:seed -- backups/<export>.migrated.json
+npm run web:emulator                                # terminal 2
+```
+
+The `.migrated.json` file comes from `npm run migrate:dry-run` (see [MIGRATION.md](MIGRATION.md)).
+The seed also adds a copy of a recent match, part-way through, as `demo-live`.
 
 ## Conventions
 

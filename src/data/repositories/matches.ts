@@ -106,6 +106,8 @@ export function createMatchRepository(ctx: DataContext) {
             ...(meta.tournamentId ? { tournamentId: meta.tournamentId } : {}),
             teamA: meta.teamA,
             teamB: meta.teamB,
+            teamAName: a.name,
+            teamBName: b.name,
             status: 'scheduled',
             updatedAt: serverTimestamp(),
           },
