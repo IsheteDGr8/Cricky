@@ -20,6 +20,7 @@
     "emulators": "firebase emulators:start --config firebase.emulator.json --project demo-cricky",
     "test:emulator": "jest --config jest.emulator.config.js --runInBand",
     "test:rules": "firebase emulators:exec --config firebase.emulator.json --project demo-cricky --only auth,database \"npm run test:emulator\"",
+    "migrate:dry-run": "tsx scripts/migrate-legacy/cli.ts",
     "prepare": "husky"
   },
   "dependencies": {
@@ -63,6 +64,7 @@
     "jest-expo": "~57.0.5",
     "lint-staged": "^17.5.1",
     "prettier": "^3.9.9",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3"
   },
   "lint-staged": {

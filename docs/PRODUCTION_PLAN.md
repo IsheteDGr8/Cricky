@@ -269,7 +269,7 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 - [x] Leaderboards per tournament (quick matches excluded; the caller picks which matches count).
 - [x] Playoff bracket generation and advancement.
 - [x] Exhaustive tests (180 tests, ≥ 90% coverage enforced).
-- [ ] Replay real matches from the backup: moved to Phase 3, where the migration converts them to events.
+- [x] Replay real matches from the backup: done by the Phase 3 migration dry run.
 - [x] Layer boundaries enforced by ESLint; [`ARCHITECTURE.md`](ARCHITECTURE.md) written.
 
 ### Phase 2.5: DevSecOps pipeline
@@ -289,7 +289,7 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 - [x] Auth: Google + Apple sign-in for admins; anonymous sessions for scorers; scorer-code redemption.
 - [x] Repositories (typed read/write, live subscriptions), tested end to end against the emulator.
 - [ ] Owner: enable the Anonymous, Google and Apple providers in Firebase Auth (needed before cutover).
-- [ ] Migration script (old → new) with dry run, verified against the backup: replay old ball history into events; rebuild summaries and results; compare totals with the old data.
+- [x] Migration script (old → new) with dry run, verified against the backup: replay old ball history into events; rebuild summaries and results; compare totals with the old data. See [`MIGRATION.md`](MIGRATION.md).
 
 ### Phase 4: Features
 
