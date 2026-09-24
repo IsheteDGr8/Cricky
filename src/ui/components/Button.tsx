@@ -18,6 +18,7 @@ export interface ButtonProps {
   icon?: ReactNode;
   fullWidth?: boolean;
   accessibilityHint?: string;
+  accessibilityLabel?: string;
   testID?: string;
   style?: ViewStyle;
 }
@@ -32,6 +33,7 @@ export function Button({
   icon,
   fullWidth = false,
   accessibilityHint,
+  accessibilityLabel,
   testID,
   style,
 }: ButtonProps) {
@@ -75,7 +77,7 @@ export function Button({
       onPress={onPress}
       disabled={inactive}
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel ?? label}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: inactive, busy: loading }}
       style={({ pressed }) => [

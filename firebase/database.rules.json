@@ -218,7 +218,7 @@
       ".indexOn": ["tournamentId", "updatedAt"],
       "$mid": {
         ".write": "auth != null && (root.child('roles').child(auth.uid).val() === 'admin' || root.child('roles').child(auth.uid).val() === 'owner' || (root.child('matches').child($mid).child('meta/locked').val() !== true && root.child('scorerCodes').child($mid).child('code').exists() && root.child('scorers').child($mid).child(auth.uid).child('code').val() === root.child('scorerCodes').child($mid).child('code').val()))",
-        ".validate": "newData.hasChildren(['stage', 'teamA', 'teamB', 'status', 'updatedAt']) && newData.child('updatedAt').val() === now",
+        ".validate": "newData.hasChildren(['stage', 'teamA', 'teamB', 'teamAName', 'teamBName', 'status', 'updatedAt']) && newData.child('updatedAt').val() === now",
         "stage": {
           ".validate": "newData.isString() && newData.val().matches(/^(group|playoff|quick)$/)"
         },
@@ -229,6 +229,12 @@
           ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
         },
         "teamB": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+        },
+        "teamAName": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+        },
+        "teamBName": {
           ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
         },
         "status": {

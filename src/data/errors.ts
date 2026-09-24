@@ -22,6 +22,19 @@ export function isPermissionDenied(error: unknown): boolean {
   );
 }
 
+/** True when the write never reached the rules (offline, timeout, transport). */
+export function isUnavailable(error: unknown): boolean {
+  const code = String((error as { code?: unknown } | null)?.code ?? '');
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    code === 'unavailable' ||
+    code === 'network-request-failed' ||
+    /unavailable|network-request-failed|failed to fetch|network request failed|offline/i.test(
+      message,
+    )
+  );
+}
+
 /** The error to rethrow from a failed write: rule rejections become DataErrors, others pass through. */
 export function toWriteError(error: unknown, message: string): unknown {
   if (isPermissionDenied(error))

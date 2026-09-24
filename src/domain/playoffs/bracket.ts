@@ -76,6 +76,30 @@ export function finalOnlyBracket(group = 'A'): Bracket {
   };
 }
 
+export type PlayoffFormat = 'none' | 'final_only' | 'top_four' | 'crossover';
+
+/**
+ * The bracket a tournament's format describes, or null for no playoffs.
+ * @param groups group names in order; crossover uses the first two, the others the first.
+ */
+export function bracketForFormat(
+  format: PlayoffFormat,
+  groups: readonly string[],
+  options: BracketOptions = {},
+): Bracket | null {
+  const [first = 'A', second = 'B'] = groups;
+  switch (format) {
+    case 'crossover':
+      return crossoverBracket(first, second, options);
+    case 'top_four':
+      return topFourBracket(first, options);
+    case 'final_only':
+      return finalOnlyBracket(first);
+    case 'none':
+      return null;
+  }
+}
+
 export interface ResolvedFixture {
   id: FixtureId;
   name: string;

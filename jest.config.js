@@ -1,6 +1,15 @@
+const expoPreset = require('jest-expo/jest-preset');
+
 /** @type {import('jest').Config} */
 module.exports = {
   preset: 'jest-expo',
+  // Firebase ships ES modules (some as .mjs); screens import it through src/data, so Jest must
+  // transform it.
+  transform: { ...expoPreset.transform, '\\.mjs$': expoPreset.transform['\\.[jt]sx?$'] },
+  transformIgnorePatterns: expoPreset.transformIgnorePatterns.map((pattern) =>
+    pattern.replace('/node_modules/(?!(', '/node_modules/(?!(firebase|@firebase|'),
+  ),
+  setupFiles: [...expoPreset.setupFiles, '<rootDir>/jest.setup.ts'],
   testPathIgnorePatterns: ['/node_modules/', '/legacy/', '/dist/', '\\.emulator\\.test\\.ts$'],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',

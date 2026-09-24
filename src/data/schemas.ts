@@ -101,6 +101,9 @@ export const MatchSummarySchema = z.object({
   tournamentId: id.optional(),
   teamA: id,
   teamB: id,
+  /** Copied from the match so lists don't need to load every match. */
+  teamAName: name,
+  teamBName: name,
   status: z.enum(['scheduled', 'live', 'complete']),
   updatedAt: z.number(),
   innings: z.array(inningsScore).max(2).optional(),

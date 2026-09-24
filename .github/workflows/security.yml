@@ -34,6 +34,7 @@ jobs:
           config: |
             paths-ignore:
               - legacy
+              - scripts
               - '**/__tests__/**'
               - '**/__fixtures__/**'
 
