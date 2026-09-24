@@ -1,13 +1,22 @@
+# https://github.com/gitleaks/gitleaks#configuration
+title = "Cricky"
+
 [extend]
 useDefault = true
 
 [[allowlists]]
-description = "Firebase web API key: public by design (it identifies the project; access is enforced by database rules and App Check)"
+id = "firebase-web-api-key"
+description = "Firebase web API key: public by design (identifies the project; access is enforced by database rules and App Check)"
 regexTarget = "match"
 regexes = ['''AIzaSyAzIFrKBsY2iwHRdFAPzE4NrincGKv8iyE''']
 
 [[allowlists]]
-description = "Firebase Auth user IDs in database rules are identifiers, not credentials"
-paths = ['''^firebase/database\.rules\.json$''']
+id = "firebase-admin-uid"
+description = "Firebase Auth UIDs in database rules are identifiers, not credentials"
 regexTarget = "match"
-regexes = ['''[A-Za-z0-9]{28}''']
+regexes = ['''vJQmdPwLdENXGqOcZJzPNZE39AD3''']
+
+[[allowlists]]
+id = "firebase-rules-file"
+description = "Entire database rules file is allowlisted; it only contains public path rules and Auth UIDs"
+paths = ['''(^|/)firebase/database\.rules\.json$''']
