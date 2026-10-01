@@ -44,6 +44,7 @@ export default function RootLayout() {
             <Stack.Screen name="admin/tournament/[id]" options={{ title: 'Edit tournament' }} />
             <Stack.Screen name="admin/match/new" options={{ title: 'Start a match' }} />
             <Stack.Screen name="admin/match/quick" options={{ title: 'Quick match' }} />
+            <Stack.Screen name="privacy" options={{ title: 'Privacy' }} />
             <Stack.Screen name="+not-found" options={{ title: 'Not found' }} />
           </Stack>
         </ThemeProvider>

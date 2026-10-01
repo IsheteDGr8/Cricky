@@ -9,6 +9,7 @@ import {
   type Auth,
 } from 'firebase/auth';
 import type { Unsubscribe } from './context';
+import { DataError } from './errors';
 import type { AccessRepository } from './repositories/access';
 import type { Role } from './schemas';
 
@@ -72,6 +73,13 @@ export function createAuthService(auth: Auth, access: AccessRepository) {
 
     async signOut(): Promise<void> {
       await signOut(auth);
+    },
+
+    /** Admins and scorers: removes this Auth user. Viewers have no account. */
+    async deleteAccount(): Promise<void> {
+      const user = auth.currentUser;
+      if (!user) throw new DataError('not_signed_in', 'Sign in first');
+      await user.delete();
     },
   };
 }

@@ -136,6 +136,7 @@ export function fakeDataLayer(
       ensureSignedIn: async () => 'uid',
       signInWithGooglePopup: async () => {},
       signOut: async () => {},
+      deleteAccount: async () => {},
     },
     access: {
       redeemScorerCode: async () => {},
