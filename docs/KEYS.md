@@ -1,7 +1,9 @@
-# Sentry and App Check (owner)
+# App Check (owner)
 
-These are optional. The app runs without them. Do **not** turn on App Check
-enforcement in Firebase until the v1 site is retired (Phase 7).
+Optional. The app runs without it. Do **not** turn on App Check enforcement in
+Firebase until the v1 site is retired (Phase 7).
+
+Sentry (also optional, skip for now): [`SENTRY.md`](SENTRY.md).
 
 Copy `.env.example` to `.env.local` first:
 
@@ -9,36 +11,12 @@ Copy `.env.example` to `.env.local` first:
 copy .env.example .env.local
 ```
 
-Then fill in the two values below. Restart `npm run web` after you save the file.
-`.env.local` is gitignored — never commit it.
+Restart `npm run web` after you save the file. `.env.local` is gitignored —
+never commit it.
 
 ---
 
-## 1. Sentry (crash reports, free)
-
-1. Open [https://sentry.io/signup](https://sentry.io/signup) and create a free
-   **Developer** account.
-2. Create an organization if it asks (any name, e.g. `cricky`).
-3. Create a project:
-   - Platform: **React Native** (Expo is fine).
-   - Name: `cricky`.
-4. If a setup wizard appears, you can skip it. The app already calls
-   `Sentry.init` when a DSN is present.
-5. In Sentry: **Settings → Projects → cricky → Client Keys (DSN)**.
-6. Copy the DSN. It looks like
-   `https://examplePublicKey@o0.ingest.sentry.io/0`.
-7. In `.env.local`, set:
-
-   ```
-   EXPO_PUBLIC_SENTRY_DSN=https://that-value-you-copied
-   ```
-
-8. Restart the app. You should see a test event if you force an error; otherwise
-   it stays quiet until something crashes.
-
----
-
-## 2. Firebase App Check + reCAPTCHA (web)
+## Firebase App Check + reCAPTCHA (web)
 
 Goal: register the web app so it _can_ send App Check tokens. Leave enforcement
 **off** so the live v1 site keeps working.
@@ -101,9 +79,9 @@ EXPO_PUBLIC_APPCHECK_DEBUG_TOKEN=the-debug-token
 
 ## 3. What you should see
 
-| File / console            | Expected                                     |
-| ------------------------- | -------------------------------------------- |
-| `.env.local`              | DSN and/or site key filled in                |
-| GitHub                    | No new secrets (these values are public-ish) |
-| Firebase App Check → APIs | All **Unenforced**                           |
-| Live site                 | Unchanged (still v1)                         |
+| File / console            | Expected                                                |
+| ------------------------- | ------------------------------------------------------- |
+| `.env.local`              | Site key filled in (Sentry DSN only if you set that up) |
+| GitHub                    | No new secrets (these values are public-ish)            |
+| Firebase App Check → APIs | All **Unenforced**                                      |
+| Live site                 | Unchanged (still v1)                                    |
