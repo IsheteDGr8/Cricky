@@ -2,13 +2,16 @@ import Constants from 'expo-constants';
 import { router, type Href } from 'expo-router';
 import { View } from 'react-native';
 
-import { useAdminSignIn } from '@/features';
+import { confirmAction, useAdminSignIn, useDataLayer, useSession } from '@/features';
 import { Button, Card, Screen, Text, useTheme } from '@/ui';
 
 export default function MoreScreen() {
   const { spacing } = useTheme();
   const { staff } = useAdminSignIn();
+  const session = useSession();
+  const { auth } = useDataLayer();
   const version = Constants.expoConfig?.version ?? 'dev';
+  const signedIn = session.status === 'ready' && session.data !== null;
 
   return (
     <Screen title="More">
@@ -33,6 +36,38 @@ export default function MoreScreen() {
             variant="secondary"
             onPress={() => router.push('/admin' as Href)}
           />
+        </View>
+      </Card>
+      <Card>
+        <View style={{ gap: spacing.sm }}>
+          <Text variant="heading">Privacy</Text>
+          <Text color="textMuted">
+            What we store, who can read scores, and how to remove a signed-in account.
+          </Text>
+          <Button
+            label="Privacy policy"
+            variant="secondary"
+            onPress={() => router.push('/privacy' as Href)}
+          />
+          {signedIn ? (
+            <Button
+              label="Delete my account"
+              variant="danger"
+              onPress={() => {
+                void (async () => {
+                  if (
+                    !(await confirmAction(
+                      'Delete account',
+                      'This removes your sign-in. Match scores you already entered stay on the card.',
+                    ))
+                  ) {
+                    return;
+                  }
+                  await auth.deleteAccount();
+                })();
+              }}
+            />
+          ) : null}
         </View>
       </Card>
       <Card>

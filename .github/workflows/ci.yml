@@ -49,7 +49,7 @@ jobs:
         run: npm run test:ci
 
       - name: Web build
-        run: npm run build:web
+        run: npm run export:web
 
   rules:
     name: Database rules and repositories

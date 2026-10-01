@@ -16,6 +16,7 @@
     "test:watch": "jest --watch",
     "test:ci": "jest --ci --coverage",
     "build:web": "expo export --platform web",
+    "export:web": "expo export --platform web && tsx scripts/prepare-web-export.ts",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:ci",
     "emulators": "firebase emulators:start --config firebase.emulator.json --project demo-cricky",
     "test:emulator": "jest --config jest.emulator.config.js --runInBand",

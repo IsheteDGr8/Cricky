@@ -311,18 +311,12 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 
 ### Phase 6: Release
 
-- [ ] **Deploy pipeline:** GitHub Actions deploys rules and web on merge to `main`, authenticated with Workload Identity Federation (no long-lived keys); a protected `production` environment requires the owner's approval.
-- [ ] **Release integrity:** build provenance attestations and an SBOM attached to each GitHub release; EAS credentials stored in EAS, never in the repo.
-- [ ] **Web:** Expo web export → Firebase Hosting (with PWA manifest and security headers).
-- [ ] **Android:** EAS build → APK for direct sharing (free). Optional: Google Play ($25 one-time; new personal accounts need a closed test with 12 testers for 14 days before going public).
-- [ ] **iOS** (friend's Apple Developer account):
-  1. Friend adds you to **App Store Connect → Users and Access** with the _App Manager_ role (or _Admin_).
-  2. Create the app record (bundle ID, e.g. `app.cricky.scorer`).
-  3. Friend creates an **App Store Connect API key** for EAS Submit (or runs `eas submit` himself).
-  4. `eas build -p ios --profile production` (cloud build, no Mac) → `eas submit -p ios`.
-  5. Test through **TestFlight** (internal testers, then external after a quick beta review).
-  6. Submit for App Review with screenshots, description, privacy details and a demo account/code for the reviewer.
-- [ ] **Store requirements:** privacy policy page (hosted on Firebase Hosting), data-safety / privacy-nutrition forms, app icons and splash, screenshots. Account deletion in-app if users can create accounts (admins/scorers).
+- [x] **Deploy pipeline:** GitHub Actions exports web, writes an SBOM and provenance; optional Hosting **preview** channel after `production` environment approval + WIF. Live Hosting stays on `legacy/`. New rules are not deployed. See [`RELEASE.md`](RELEASE.md).
+- [x] **Release integrity:** SBOM + build provenance on `v*` tags; EAS credentials stay in EAS (`eas.json` preview APK profile).
+- [x] **Web:** `npm run export:web` → `dist/` + `firebase.next.json` (preview / later cutover). PWA fields in `app.json`; security headers copied from live Hosting.
+- [ ] **Android:** `eas build -p android --profile preview` for a shareable APK (owner, when wanted). Play Store still skipped.
+- [ ] **iOS** (friend's Apple Developer account) — unchanged; do this when that access exists.
+- [x] **Store requirements started:** privacy policy (`/privacy`, `legacy/privacy.html`, `public/privacy.html`) and in-app account deletion. Screenshots / store forms wait for store listing.
 
 ### Phase 7: Cutover
 
