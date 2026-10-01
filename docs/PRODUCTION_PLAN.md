@@ -314,7 +314,8 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 - [x] **Deploy pipeline:** GitHub Actions exports web, writes an SBOM and provenance; optional Hosting **preview** channel after `production` environment approval + WIF. Live Hosting stays on `legacy/`. New rules are not deployed. See [`RELEASE.md`](RELEASE.md).
 - [x] **Release integrity:** SBOM + build provenance on `v*` tags; EAS credentials stay in EAS (`eas.json` preview APK profile).
 - [x] **Web:** `npm run export:web` → `dist/` + `firebase.next.json` (preview / later cutover). PWA fields in `app.json`; security headers copied from live Hosting.
-- [ ] **Android:** `eas build -p android --profile preview` for a shareable APK (owner, when wanted). Play Store still skipped.
+- [x] **Android (code):** preview APK profile and runbook — [`ANDROID.md`](ANDROID.md). Play Store still skipped.
+- [ ] **Android (owner):** `eas login` + `eas build -p android --profile preview`, then share the APK.
 - [ ] **iOS** (friend's Apple Developer account) — unchanged; do this when that access exists.
 - [x] **Store requirements started:** privacy policy (`/privacy`, `legacy/privacy.html`, `public/privacy.html`) and in-app account deletion. Screenshots / store forms wait for store listing.
 
@@ -324,6 +325,13 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 - [ ] Owner: freeze scoring, backup, `migrate:dry-run`, then run the flip commands in `CUTOVER.md`.
 - [ ] Owner: set `/roles/<uid>` = `owner`; confirm the new site and a hash link.
 - [ ] Later: remove the PIN account; delete `legacy/` after a grace period.
+
+### Phase 8: Android APK
+
+- [x] Partnerships on the match scorecard (already computed in the engine).
+- [x] `eas.json` preview APK + `android.versionCode`; [`ANDROID.md`](ANDROID.md).
+- [ ] Owner: build and sideload the APK (see Android checkboxes in Phase 6).
+- [ ] After the first APK: paste the signing SHA-256 into `public/.well-known/assetlinks.json`.
 
 ---
 

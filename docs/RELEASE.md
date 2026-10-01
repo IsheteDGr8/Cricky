@@ -64,9 +64,12 @@ exits 0. The SBOM job still runs.
 
 ## Android APK (optional, free)
 
+See [`ANDROID.md`](ANDROID.md). Short version:
+
 ```sh
 npm install -g eas-cli
 eas login
+eas init
 eas build -p android --profile preview
 ```
 
@@ -77,11 +80,8 @@ Credentials stay in Expo’s account, not this repo. Play Store is still skipped
 Wait for the friend’s Apple Developer access. Then follow Phase 6 in
 [`PRODUCTION_PLAN.md`](PRODUCTION_PLAN.md).
 
-## Cutover (Phase 7, not this PR)
+## Cutover (Phase 7)
 
-1. Freeze v1 scoring.
-2. Backup → `npm run migrate:dry-run` → verify.
-3. Point Hosting at `firebase.next.json` and deploy **new** rules
-   (`firebase/database.rules.json`) in the same window.
-4. Redirect `#match=` links.
-5. Remove the PIN account after a grace period.
+Follow [`CUTOVER.md`](CUTOVER.md). Do not use `firebase.next.json` for the live
+flip — that file still points at legacy rules. The operator file is
+`firebase.cutover.json`.

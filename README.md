@@ -55,6 +55,10 @@ Dependency rule: `app/` may use `domain/` and `ui/`; `domain/` imports nothing a
 ESLint enforces it. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the layers and how
 event-sourced scoring works.
 
+A shareable Android APK (no Play Store) is documented in
+[`docs/ANDROID.md`](docs/ANDROID.md). iOS waits for the friend’s Apple Developer
+account. The live site stays on v1 until you follow [`docs/CUTOVER.md`](docs/CUTOVER.md).
+
 ## Deploying the v1 site and rules
 
 The legacy site and database rules still deploy with the Firebase CLI:

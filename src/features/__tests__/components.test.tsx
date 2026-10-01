@@ -79,6 +79,8 @@ describe('match components', () => {
     expect(screen.getByText('Huskies won by 12 runs')).toBeTruthy();
     expect(screen.getByText('Player of the match: Asha')).toBeTruthy();
     expect(screen.getByLabelText('Huskies batting')).toBeTruthy();
+    expect(screen.getByLabelText('Huskies partnerships')).toBeTruthy();
+    expect(screen.getByText('Asha / Ben')).toBeTruthy();
     expect(screen.getAllByText('not out').length).toBe(4);
     expect(screen.getAllByText('Asha to Bea, no run')).toHaveLength(6);
   });

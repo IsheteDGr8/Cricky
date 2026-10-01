@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Phase 8
+
+- Match scorecard lists partnerships.
+- Android preview APK runbook (`docs/ANDROID.md`). The live site is unchanged.
+
 ### Phase 7 (not live)
 
 - Old `#match=` links redirect to `/match/<id>` once the new site is hosted.
