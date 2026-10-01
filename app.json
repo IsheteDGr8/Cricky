@@ -18,6 +18,9 @@
     },
     "android": {
       "package": "com.ishete.cricky",
+      "versionCode": 1,
+      "allowBackup": false,
+      "softwareKeyboardLayoutMode": "pan",
       "intentFilters": [
         {
           "action": "VIEW",

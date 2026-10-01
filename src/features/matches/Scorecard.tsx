@@ -30,6 +30,12 @@ const BOWLING: DataColumn[] = [
   { label: 'Econ', width: 56 },
 ];
 
+const PARTNERSHIPS: DataColumn[] = [
+  { label: 'Partnership' },
+  { label: 'R', width: 36 },
+  { label: 'B', width: 36 },
+];
+
 /** Full batting and bowling card for every innings played so far. */
 export function Scorecard({ view }: { view: MatchView }) {
   const { spacing } = useTheme();
@@ -110,6 +116,18 @@ function InningsCard({ innings: inn, view }: { innings: InningsState; view: Matc
               )
               .join(', ')}
           </Text>
+        ) : null}
+
+        {inn.partnerships.length ? (
+          <DataTable
+            accessibilityLabel={`${view.teamName(inn.battingTeam)} partnerships`}
+            columns={PARTNERSHIPS}
+            rows={inn.partnerships.map((p, i) => ({
+              key: `${p.batters[0]}-${p.batters[1]}-${i}`,
+              cells: [`${name(p.batters[0])} / ${name(p.batters[1])}`, p.runs, p.legalBalls],
+              emphasis: i === inn.partnerships.length - 1 && inn.endReason === null,
+            }))}
+          />
         ) : null}
 
         <DataTable
