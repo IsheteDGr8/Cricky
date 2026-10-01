@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Phase 9
+
+- Match screen Worm tab: both innings on one chart.
+
 ### Phase 8
 
 - Match scorecard lists partnerships.

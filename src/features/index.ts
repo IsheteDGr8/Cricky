@@ -11,6 +11,7 @@ export { MatchCard } from './matches/MatchCard';
 export { OverTimeline } from './matches/OverTimeline';
 export { ScoreHeader } from './matches/ScoreHeader';
 export { Scorecard } from './matches/Scorecard';
+export { WormChart } from './matches/WormChart';
 export { useMatch, useRecentMatches, type MatchLists } from './matches/hooks';
 export type { LiveFigures, MatchView } from './matches/match-view';
 

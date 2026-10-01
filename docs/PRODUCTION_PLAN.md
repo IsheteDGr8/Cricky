@@ -188,7 +188,7 @@ Deploy the locked-down rules to the **current** live app once the PIN account is
 - No emoji as icons; use a consistent icon set (Lucide / SF Symbols style).
 - **Accessibility:** 44×44 pt minimum tap targets, WCAG AA contrast, screen-reader labels, dynamic type, reduced-motion support.
 - **Scoring pad:** big buttons, haptics on every ball, a confirmation sheet for wickets and innings end, one-tap undo with an "undo" toast, and a clear sync status (online / queued offline).
-- **Viewer:** live score header, over-by-over ball chips, a full scorecard, commentary, partnerships, required run rate and worm chart (later).
+- **Viewer:** live score header, over-by-over ball chips, a full scorecard, commentary, partnerships, required run rate and worm chart.
 - Skeleton loading states, empty states, error states with retry, pull-to-refresh.
 - **Deep links:** `https://cricky-cricket-analysis.web.app/match/<id>` opens the app if it's installed (Universal Links / App Links), otherwise the web.
 - Native share sheet for scorecards.
@@ -332,6 +332,11 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 - [x] `eas.json` preview APK + `android.versionCode`; [`ANDROID.md`](ANDROID.md).
 - [ ] Owner: build and sideload the APK (see Android checkboxes in Phase 6).
 - [ ] After the first APK: paste the signing SHA-256 into `public/.well-known/assetlinks.json`.
+
+### Phase 9: Worm chart
+
+- [x] Match screen **Worm** tab: cumulative runs vs overs for both innings.
+- [x] Series math in `src/domain/scoring/worm.ts` (tested). Live site unchanged.
 
 ---
 

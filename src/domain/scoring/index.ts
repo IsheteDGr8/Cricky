@@ -13,3 +13,4 @@ export {
 } from './rules';
 export * from './selectors';
 export type * from './types';
+export { wormExtent, wormSeries, type WormPoint } from './worm';
