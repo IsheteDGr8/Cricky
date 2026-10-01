@@ -15,6 +15,7 @@ import {
   ScorePad,
   Scorecard,
   Standings,
+  WormChart,
   useMatch,
   useTournament,
 } from '..';
@@ -51,6 +52,7 @@ function MatchPage({ id }: { id: string }) {
         <>
           <ScoreHeader view={view} />
           <Scorecard view={view} />
+          <WormChart view={view} />
           <Commentary view={view} />
         </>
       )}
@@ -81,6 +83,9 @@ describe('match components', () => {
     expect(screen.getByLabelText('Huskies batting')).toBeTruthy();
     expect(screen.getByLabelText('Huskies partnerships')).toBeTruthy();
     expect(screen.getByText('Asha / Ben')).toBeTruthy();
+    expect(
+      screen.getByLabelText('Huskies 12 from 2.0 overs. Eagles 0 from 2.0 overs'),
+    ).toBeTruthy();
     expect(screen.getAllByText('not out').length).toBe(4);
     expect(screen.getAllByText('Asha to Bea, no run')).toHaveLength(6);
   });

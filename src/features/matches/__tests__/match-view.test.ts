@@ -1,6 +1,7 @@
 import { dots, ev, firstInningsOf, over } from '@/domain/__fixtures__/scoring';
 import { snapshot } from '../../__fixtures__/data';
 import { buildMatchView } from '../match-view';
+import { wormCaption } from '../worm-view';
 
 describe('buildMatchView', () => {
   it('replays a finished match with no live figures', () => {
@@ -32,5 +33,19 @@ describe('buildMatchView', () => {
   it('hides innings nobody has batted in yet', () => {
     expect(buildMatchView(snapshot([])).innings).toEqual([]);
     expect(buildMatchView(snapshot([])).live).toBeNull();
+  });
+});
+
+describe('wormCaption', () => {
+  it('names both innings', () => {
+    expect(wormCaption(buildMatchView(snapshot()))).toBe(
+      'Huskies 12 from 2.0 overs. Eagles 0 from 2.0 overs',
+    );
+  });
+
+  it('explains an empty match', () => {
+    expect(wormCaption(buildMatchView(snapshot([])))).toBe(
+      'Worm chart is empty until the first ball.',
+    );
   });
 });

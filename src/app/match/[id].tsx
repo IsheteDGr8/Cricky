@@ -8,18 +8,20 @@ import {
   ScoreHeader,
   Scorecard,
   ShareButton,
+  WormChart,
   useIsStaff,
   useMatch,
   type MatchView,
 } from '@/features';
 import { Button, SegmentedControl, Screen } from '@/ui';
 
-type Section = 'commentary' | 'scorecard' | 'overs';
+type Section = 'commentary' | 'scorecard' | 'overs' | 'worm';
 
 const SECTIONS: { value: Section; label: string }[] = [
   { value: 'commentary', label: 'Commentary' },
   { value: 'scorecard', label: 'Scorecard' },
   { value: 'overs', label: 'Overs' },
+  { value: 'worm', label: 'Worm' },
 ];
 
 export default function MatchScreen() {
@@ -55,6 +57,7 @@ function MatchPage({ view }: { view: MatchView }) {
       {section === 'commentary' && <Commentary view={view} />}
       {section === 'scorecard' && <Scorecard view={view} />}
       {section === 'overs' && <OverTimeline view={view} />}
+      {section === 'worm' && <WormChart view={view} />}
     </>
   );
 }
