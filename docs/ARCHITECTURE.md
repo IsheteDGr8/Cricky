@@ -165,7 +165,7 @@ npm run web:emulator                                # terminal 2
 ```
 
 Release and Hosting preview (v1 stays live): [`RELEASE.md`](RELEASE.md).
-Sentry / App Check keys: [`KEYS.md`](KEYS.md).
+App Check: [`KEYS.md`](KEYS.md). Sentry (later): [`SENTRY.md`](SENTRY.md).
 
 The `.migrated.json` file comes from `npm run migrate:dry-run` (see [MIGRATION.md](MIGRATION.md)).
 The seed also adds a copy of a recent match, part-way through, as `demo-live`.
