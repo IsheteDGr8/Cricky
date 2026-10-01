@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Phase 7 (not live)
+
+- Old `#match=` links redirect to `/match/<id>` once the new site is hosted.
+- Cutover runbook and `firebase.cutover.json`. Production is unchanged until you run those commands.
+
 ### Phase 6
 
 - Release workflow: web export, SBOM, provenance; optional Hosting preview channel (not live v1).

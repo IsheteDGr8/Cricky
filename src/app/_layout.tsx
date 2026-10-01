@@ -1,7 +1,7 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-import { DataProvider, initMonitoring } from '@/features';
+import { DataProvider, initMonitoring, useLegacyMatchRedirect } from '@/features';
 import { AppThemeProvider, buildTheme, useColorScheme } from '@/ui';
 
 initMonitoring();
@@ -27,6 +27,7 @@ function useNavigationTheme() {
 export default function RootLayout() {
   const scheme = useColorScheme();
   const navTheme = useNavigationTheme();
+  useLegacyMatchRedirect();
 
   return (
     <DataProvider>

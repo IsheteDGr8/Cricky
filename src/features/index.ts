@@ -1,8 +1,9 @@
 export { DataProvider, useDataLayer } from './data-provider';
+export { useLegacyMatchRedirect } from './legacy-hash';
 export { initMonitoring, reportError } from './monitoring';
 export { Loaded } from './Loaded';
 export { combine, mapLoadable, useSubscription, type Loadable } from './loadable';
-export { shareLink, type ShareOutcome } from './share';
+export { matchPathFromHash, shareLink, type ShareOutcome } from './share';
 export { ShareButton } from './ShareButton';
 
 export { Commentary } from './matches/Commentary';

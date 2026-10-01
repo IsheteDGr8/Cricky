@@ -3,6 +3,17 @@ import { Platform, Share } from 'react-native';
 
 export type ShareOutcome = 'shared' | 'copied' | 'dismissed';
 
+/** v1 shared `https://…/#match=<id>`. After cutover that hash becomes `/match/<id>`. */
+export function matchPathFromHash(hash: string): string | null {
+  const found = /^#match=([^&]+)/i.exec(hash);
+  if (!found?.[1]) return null;
+  try {
+    return `/match/${encodeURIComponent(decodeURIComponent(found[1]))}`;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Shares a link to a screen in the app, e.g. `/match/abc`.
  * Browsers without a share sheet get the link copied instead.

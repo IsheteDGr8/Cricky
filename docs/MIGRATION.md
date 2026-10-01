@@ -54,7 +54,6 @@ whose teams no longer exist). Standings, playoff bracket and champion match v1.
 
 ## At cutover (Phase 7)
 
-1. Export the live database again and rerun the dry run on it; review the report.
-2. Deploy `firebase/database.rules.json`.
-3. Import the migrated file: `firebase database:set / backups/<name>.migrated.json`.
-4. Set your own role in the console: `/roles/<your uid>` = `"owner"`.
+Follow [`CUTOVER.md`](CUTOVER.md). Short version: backup → dry run →
+`firebase deploy --config firebase.cutover.json` → `database:set` the migrated
+JSON → set `/roles/<uid>` = `owner`.
