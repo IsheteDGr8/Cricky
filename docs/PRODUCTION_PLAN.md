@@ -320,11 +320,10 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 
 ### Phase 7: Cutover
 
-- [ ] Freeze scoring on the legacy app.
-- [ ] Final backup → run migration → verify.
-- [ ] Deploy the new rules, the new web app and the mobile releases.
-- [ ] Old `#match=<id>` links redirect to `/match/<id>`.
-- [ ] Remove the legacy PIN account and the `legacy/` folder after a grace period.
+- [x] Code ready: `#match=<id>` → `/match/<id>` on the new web app; `firebase.cutover.json` + [`CUTOVER.md`](CUTOVER.md). **Not flipped.** Live Hosting is still v1.
+- [ ] Owner: freeze scoring, backup, `migrate:dry-run`, then run the flip commands in `CUTOVER.md`.
+- [ ] Owner: set `/roles/<uid>` = `owner`; confirm the new site and a hash link.
+- [ ] Later: remove the PIN account; delete `legacy/` after a grace period.
 
 ---
 

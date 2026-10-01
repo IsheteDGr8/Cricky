@@ -24,6 +24,7 @@
     "migrate:dry-run": "tsx scripts/migrate-legacy/cli.ts",
     "emulators:seed": "tsx scripts/seed-emulator.ts",
     "load-test": "tsx scripts/load-test-viewers.ts",
+    "cutover:check": "tsx scripts/cutover-check.ts",
     "web:emulator": "cross-env EXPO_PUBLIC_FIREBASE_EMULATOR_HOST=127.0.0.1 expo start --web",
     "prepare": "husky"
   },
