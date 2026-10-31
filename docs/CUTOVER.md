@@ -15,8 +15,10 @@ match during cutover will be lost.
 
 ```sh
 npx firebase login
-npx firebase database:get / --project cricky-cricket-analysis > backups/rtdb-cutover.json
+npx firebase database:get / --project cricky-cricket-analysis -o backups/rtdb-cutover.json
 ```
+
+Use `-o` (not `>`). PowerShell's `>` writes UTF-16, which is not JSON.
 
 Keep that file. It is gitignored.
 
