@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Security
+
+- Expo SDK 57 patch updates and `npm audit fix`; clears the critical `shell-quote` advisory.
+- CI audit gate (`npm run audit:gate`) with expiring exceptions in `.github/audit-allowlist.json`.
+
 ### Phase 9
 
 - Match screen Worm tab: both innings on one chart.

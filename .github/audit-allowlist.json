@@ -1,0 +1,14 @@
+[
+  {
+    "advisory": "GHSA-mrhx-c7xc-m3w5",
+    "package": "zod",
+    "reason": "Only the zod 3.25.76 copy inside @expo/cli (build tool, not shipped). No patched 3.x exists; the app's own zod is 4.6.7.",
+    "expires": "2026-12-31"
+  },
+  {
+    "advisory": "GHSA-qr28-fpjm-wq7f",
+    "package": "decode-uri-component",
+    "reason": "Pulled in by expo-router via query-string 7. The fix (0.5.1) is ESM-only and query-string 7 loads it with require. Client-side DoS of the user's own tab only.",
+    "expires": "2026-12-31"
+  }
+]
