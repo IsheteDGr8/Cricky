@@ -3,7 +3,16 @@ export { useLegacyMatchRedirect } from './legacy-hash';
 export { initMonitoring, reportError } from './monitoring';
 export { Loaded } from './Loaded';
 export { combine, mapLoadable, useSubscription, type Loadable } from './loadable';
-export { matchPathFromHash, shareLink, type ShareOutcome } from './share';
+export { copyText, matchPathFromHash, scorerPath, shareLink, type ShareOutcome } from './share';
+export { HowItWorks } from './HowItWorks';
+export { LiveCard } from './matches/LiveCard';
+export { AdminGate } from './admin/AdminGate';
+export { Choice, PLAYOFF_FORMATS, type ChoiceOption } from './admin/Choice';
+export { AdminHub } from './admin/AdminHub';
+export { MatchWizard, type MatchWizardProps } from './admin/MatchWizard';
+export { ScorerCodePanel, spacedCode } from './admin/ScorerCodePanel';
+export { TournamentControl } from './admin/TournamentControl';
+export { nextStep, type NextStep } from './admin/next-step';
 export { ShareButton } from './ShareButton';
 
 export { Commentary } from './matches/Commentary';
@@ -24,13 +33,14 @@ export { useTournament, useTournaments } from './tournaments/hooks';
 export type { GroupTable, TournamentView } from './tournaments/tournament-view';
 
 export { useSession, isStaff } from './session';
+export type { Session } from '@/data';
 export { confirmAction } from './confirm';
 export { newRecordId } from './ids';
 
 export { CodeEntry } from './scoring/CodeEntry';
 export { ScorePad } from './scoring/ScorePad';
 export { commitEvent, commitUndo, parseMatchRef, publishDerived } from './scoring/commit';
-export { useRedeemCode, useScoreActions } from './scoring/hooks';
+export { useAlreadyScorer, useRedeemCode, useScoreActions } from './scoring/hooks';
 
 export { useAdminSignIn, useIsStaff } from './admin/hooks';
 export {

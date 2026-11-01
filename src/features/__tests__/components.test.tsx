@@ -129,7 +129,7 @@ describe('score pad', () => {
         </AppThemeProvider>
       </DataProvider>,
     );
-    expect(await screen.findByText('This ball')).toBeTruthy();
+    expect(await screen.findByText('TAP WHAT HAPPENED ON THIS BALL')).toBeTruthy();
     expect(screen.getByLabelText('4 runs')).toBeTruthy();
     await fireEvent.press(screen.getByLabelText('4 runs'));
   });

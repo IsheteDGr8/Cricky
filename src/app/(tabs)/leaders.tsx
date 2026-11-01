@@ -8,7 +8,7 @@ export default function LeadersScreen() {
   const [picked, setPicked] = useState<string | null>(null);
 
   return (
-    <Screen title="Leaders" subtitle="Top run scorers and wicket takers by tournament.">
+    <Screen title="Stats" subtitle="Top run scorers and wicket takers in each tournament.">
       <Loaded value={tournaments} loadingLabel="Loading tournaments…">
         {(list) => {
           const first = list[0];

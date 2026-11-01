@@ -1,15 +1,15 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Tabs, type Href } from 'expo-router';
-import type { ComponentProps } from 'react';
-import type { ColorValue } from 'react-native';
+import { View, type ColorValue } from 'react-native';
 
-import { BrandBar, useTheme } from '@/ui';
+import { useIsStaff } from '@/features';
+import { brand, BrandBar, useTheme, type IconName } from '@/ui';
 
 function Header() {
-  return <BrandBar onAdmin={() => router.push('/admin' as Href)} />;
+  const staff = useIsStaff();
+  const isStaff = staff.status === 'ready' && staff.data;
+  return <BrandBar onAdmin={isStaff ? () => router.push('/more' as Href) : undefined} />;
 }
-
-type IconName = ComponentProps<typeof Ionicons>['name'];
 
 function tabIcon(active: IconName, inactive: IconName) {
   function TabIcon({
@@ -24,6 +24,27 @@ function tabIcon(active: IconName, inactive: IconName) {
     return <Ionicons name={focused ? active : inactive} color={color} size={size} />;
   }
   return TabIcon;
+}
+
+/** The raised gold button in the middle of the tab bar. */
+function ScoreIcon({ focused }: { focused: boolean }) {
+  return (
+    <View
+      style={{
+        width: 48,
+        height: 48,
+        transform: [{ translateY: -22 }],
+        borderRadius: 24,
+        backgroundColor: focused ? brand.bar : brand.gold,
+        borderWidth: 4,
+        borderColor: '#FFFFFF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 6px 14px rgba(42, 21, 79, 0.35)',
+      }}>
+      <Ionicons name="create" size={24} color={focused ? brand.gold : brand.bar} />
+    </View>
+  );
 }
 
 export default function TabsLayout() {
@@ -44,22 +65,28 @@ export default function TabsLayout() {
       }}>
       <Tabs.Screen
         name="index"
-        options={{ title: 'Tournaments', tabBarIcon: tabIcon('trophy', 'trophy-outline') }}
+        options={{ title: 'Home', tabBarIcon: tabIcon('home', 'home-outline') }}
       />
       <Tabs.Screen
         name="matches"
         options={{ title: 'Matches', tabBarIcon: tabIcon('radio', 'radio-outline') }}
       />
       <Tabs.Screen
+        name="score"
+        options={{
+          title: 'Score',
+          tabBarIcon: ScoreIcon,
+          tabBarActiveTintColor: brand.bar,
+          tabBarAccessibilityLabel: 'Score a match',
+        }}
+      />
+      <Tabs.Screen
         name="leaders"
-        options={{ title: 'Leaders', tabBarIcon: tabIcon('podium', 'podium-outline') }}
+        options={{ title: 'Stats', tabBarIcon: tabIcon('podium', 'podium-outline') }}
       />
       <Tabs.Screen
         name="more"
-        options={{
-          title: 'More',
-          tabBarIcon: tabIcon('ellipsis-horizontal', 'ellipsis-horizontal'),
-        }}
+        options={{ title: 'You', tabBarIcon: tabIcon('person-circle', 'person-circle-outline') }}
       />
     </Tabs>
   );

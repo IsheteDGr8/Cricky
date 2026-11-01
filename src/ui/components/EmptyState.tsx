@@ -1,12 +1,12 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { useTheme } from '../theme';
+import { Icon, type IconName } from './Icon';
 import { Text } from './Text';
 
 export interface EmptyStateProps {
-  icon: ComponentProps<typeof Ionicons>['name'];
+  icon: IconName;
   title: string;
   message?: string;
   action?: ReactNode;
@@ -31,7 +31,7 @@ export function EmptyState({ icon, title, message, action }: EmptyStateProps) {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Ionicons name={icon} size={28} color={colors.primary} accessibilityElementsHidden />
+        <Icon name={icon} size={28} color={colors.primary} />
       </View>
       <Text variant="heading" align="center">
         {title}

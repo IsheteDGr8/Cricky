@@ -1,31 +1,45 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import { CodeEntry, Loaded, ScoreHeader, ScorePad, useIsStaff, useMatch } from '@/features';
-import { Screen } from '@/ui';
+import {
+  CodeEntry,
+  Loaded,
+  ScoreHeader,
+  ScorePad,
+  useAlreadyScorer,
+  useIsStaff,
+  useMatch,
+} from '@/features';
+import { LoadingState, Screen } from '@/ui';
 
 export default function ScoreMatchScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, code } = useLocalSearchParams<{ id: string; code?: string }>();
   const match = useMatch(id);
   const staff = useIsStaff();
+  const already = useAlreadyScorer(id);
   const [redeemed, setRedeemed] = useState(false);
-  const allowed = redeemed || (staff.status === 'ready' && staff.data);
+  const onReady = useCallback(() => setRedeemed(true), []);
+  const isStaff = staff.status === 'ready' && staff.data;
+  const allowed = redeemed || isStaff || already === true;
+  const checking = !allowed && (staff.status !== 'ready' || already === null);
 
   return (
-    <Screen edges={[]}>
+    <Screen>
       <Loaded value={match} loadingLabel="Loading match…">
         {(view) => (
           <>
             <Stack.Screen
               options={{
-                title: `Score · ${view.teamName(view.meta.teamA)} v ${view.teamName(view.meta.teamB)}`,
+                title: `${view.teamName(view.meta.teamA)} v ${view.teamName(view.meta.teamB)}`,
               }}
             />
             <ScoreHeader view={view} />
             {allowed ? (
               <ScorePad view={view} />
+            ) : checking ? (
+              <LoadingState label="Checking scorer access…" />
             ) : (
-              <CodeEntry matchId={view.id} onReady={() => setRedeemed(true)} />
+              <CodeEntry matchId={view.id} initialCode={code} onReady={onReady} />
             )}
           </>
         )}

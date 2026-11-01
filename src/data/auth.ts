@@ -18,6 +18,8 @@ export interface Session {
   /** Scorers sign in anonymously; admins with Google or Apple. */
   isAnonymous: boolean;
   role: Role | null;
+  displayName: string | null;
+  email: string | null;
 }
 
 /**
@@ -37,7 +39,12 @@ export function createAuthService(auth: Auth, access: AccessRepository) {
           onChange(null);
           return;
         }
-        const base = { uid: user.uid, isAnonymous: user.isAnonymous };
+        const base = {
+          uid: user.uid,
+          isAnonymous: user.isAnonymous,
+          displayName: user.displayName,
+          email: user.email,
+        };
         stopRole = access.watchRole(user.uid, {
           onData: (role) => onChange({ ...base, role }),
           onError: () => onChange({ ...base, role: null }),

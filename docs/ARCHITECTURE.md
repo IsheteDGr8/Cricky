@@ -151,7 +151,11 @@ Every screen has its own URL (`/tournament/{id}`, `/match/{id}`, `/score/{id}`, 
 shared links open the same screen on the web and, with the `cricky://` scheme (and later
 Universal / App Links), in the apps.
 
-Scorers open `/score/{id}` and redeem a 10-character code (admins skip the code). Each legal
+Scorers open `/score/{id}` and redeem a 10-character code (admins skip the code). A scorer link
+(`/score/{id}?code=…`, from the admin's Share button) redeems the code by itself, and a device
+that already redeemed goes straight to the pad. Admins work from the You tab: their hub lists
+live matches and tournaments, and each tournament's control room (`/admin/tournament/{id}`)
+shows the next step to take (add teams, start a match, record playoff winners, finish). Each legal
 event is checked by the engine, then written; the summary (and the result, once the match is
 over) is published from the replayed state. The match locks after Player of the Match is set.
 

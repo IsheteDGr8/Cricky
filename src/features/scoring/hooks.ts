@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DataError, isUnavailable } from '@/data';
 import type { MatchEvent } from '@/domain';
 import { useDataLayer } from '../data-provider';
+import { useSession } from '../session';
 import { reportError } from '../monitoring';
 import type { MatchView } from '../matches/match-view';
 import { commitEvent, commitUndo } from './commit';
@@ -157,4 +158,29 @@ export function useRedeemCode(matchId: string) {
   };
 
   return { redeem, busy, error, ok };
+}
+
+/** Whether this device already redeemed the match's code (null while checking). */
+export function useAlreadyScorer(matchId: string): boolean | null {
+  const { access } = useDataLayer();
+  const session = useSession();
+  const uid = session.status === 'ready' ? (session.data?.uid ?? '') : null;
+  const [found, setFound] = useState<{ key: string; value: boolean } | null>(null);
+  const key = `${matchId}:${uid ?? ''}`;
+
+  useEffect(() => {
+    if (uid === null || uid === '') return;
+    let alive = true;
+    access
+      .hasRedeemed(matchId)
+      .then((value) => alive && setFound({ key, value }))
+      .catch(() => alive && setFound({ key, value: false }));
+    return () => {
+      alive = false;
+    };
+  }, [access, key, matchId, uid]);
+
+  if (uid === null) return null;
+  if (uid === '') return false;
+  return found?.key === key ? found.value : null;
 }

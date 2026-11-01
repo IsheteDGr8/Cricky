@@ -26,7 +26,9 @@ export function Field({ label, hint, error, ...input }: FieldProps) {
           styles.input,
           typography.body,
           {
-            minHeight: minTouchTarget,
+            minHeight: input.multiline ? 120 : minTouchTarget,
+            paddingVertical: input.multiline ? spacing.sm : 0,
+            textAlignVertical: input.multiline ? 'top' : 'center',
             borderRadius: radius.md,
             borderColor: error ? colors.danger : colors.border,
             backgroundColor: colors.surface,
