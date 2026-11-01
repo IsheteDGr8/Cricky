@@ -7,6 +7,8 @@ import { emulatorHost } from './config';
  */
 export async function initAppCheck(app: FirebaseApp): Promise<void> {
   if (emulatorHost()) return;
+  // Static HTML is rendered in Node, where reCAPTCHA has no `document`.
+  if (typeof document === 'undefined') return;
   const siteKey = process.env.EXPO_PUBLIC_RECAPTCHA_SITE_KEY;
   if (!siteKey) return;
 
@@ -17,9 +19,13 @@ export async function initAppCheck(app: FirebaseApp): Promise<void> {
     ).FIREBASE_APPCHECK_DEBUG_TOKEN = debug === 'true' ? true : debug;
   }
 
-  const { initializeAppCheck, ReCaptchaEnterpriseProvider } = await import('firebase/app-check');
-  initializeAppCheck(app, {
-    provider: new ReCaptchaEnterpriseProvider(siteKey),
-    isTokenAutoRefreshEnabled: true,
-  });
+  try {
+    const { initializeAppCheck, ReCaptchaEnterpriseProvider } = await import('firebase/app-check');
+    initializeAppCheck(app, {
+      provider: new ReCaptchaEnterpriseProvider(siteKey),
+      isTokenAutoRefreshEnabled: true,
+    });
+  } catch {
+    // A bad key or a blocked script must not blank the site.
+  }
 }

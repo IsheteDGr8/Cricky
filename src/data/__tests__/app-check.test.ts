@@ -18,6 +18,12 @@ describe('initAppCheck', () => {
     delete process.env.EXPO_PUBLIC_RECAPTCHA_SITE_KEY;
     await expect(initAppCheck({} as never)).resolves.toBeUndefined();
   });
+
+  it('does nothing while Node is pre-rendering the website', async () => {
+    expect(typeof document).toBe('undefined');
+    process.env.EXPO_PUBLIC_RECAPTCHA_SITE_KEY = '6L-test';
+    await expect(initAppCheck({} as never)).resolves.toBeUndefined();
+  });
 });
 
 function restore(name: string, value: string | undefined): void {

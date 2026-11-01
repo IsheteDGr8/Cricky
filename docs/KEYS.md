@@ -1,61 +1,55 @@
-# App Check (owner)
+# App Check and the $1 budget alert (owner)
 
-Optional. The app runs without it. Do **not** turn on App Check enforcement in
-Firebase until the v1 site is retired (Phase 7).
+Do **not** turn on App Check **Enforce**. The old PIN admin account is still
+there. Enforcement would also break any client that has no token.
 
-Sentry (also optional, skip for now): [`SENTRY.md`](SENTRY.md).
-
-Copy `.env.example` to `.env.local` first:
-
-```sh
-copy .env.example .env.local
-```
-
-Restart `npm run web` after you save the file. `.env.local` is gitignored —
-never commit it.
+Copy `.env.example` to `.env.local` if you do not already have that file.
+`.env.local` is gitignored — never commit it.
 
 ---
 
-## Firebase App Check + reCAPTCHA (web)
+## 1. Firebase App Check + reCAPTCHA (website only)
 
-Goal: register the web app so it _can_ send App Check tokens. Leave enforcement
-**off** so the live v1 site keeps working.
+Goal: the live site _can_ prove it is your app. Leave every API **Unenforced**.
 
-### A. Create a score-based reCAPTCHA key
+### A. Create a Fraud Defense (reCAPTCHA) key
 
-1. Open the Google Cloud console in the same project as Firebase:
-   [https://console.cloud.google.com](https://console.cloud.google.com)
-2. Project picker (top bar) → **cricky-cricket-analysis**.
-3. Go to
-   [reCAPTCHA / Fraud Defense](https://console.cloud.google.com/security/recaptcha)
-   (search “reCAPTCHA” if the menu moved).
-4. If asked, **Enable** the reCAPTCHA Enterprise API. Wait until it finishes.
-5. **Create key**:
+If you see **“reCAPTCHA Classic is deprecated, please use Google Cloud Fraud
+Defense instead”**, that is only a warning. Do **not** create a Classic key.
+Fraud Defense is the new name for reCAPTCHA Enterprise, which is what App Check
+wants.
+
+1. Open this link (already scoped to our project):
+   [Fraud Defense / reCAPTCHA keys](https://console.cloud.google.com/security/recaptcha/create?project=cricky-cricket-analysis)
+2. Top bar project picker must say **cricky-cricket-analysis**. If it does not,
+   click it → **All** → search `cricky`.
+3. If the page says **Enable API** or **Enable Fraud Defense**, click that and
+   wait until it finishes. Then open the create-key link again.
+4. Fill in **Create key**:
    - Display name: `Cricky web`
-   - Application type: **Web**
-   - Keep **domain verification on** (do not disable it).
-   - Add domains:
+   - Application type: **Web** (not Android, not iOS)
+   - **Disable domain verification**: leave this **off**
+   - **Use checkbox challenge** / **Will you use challenges?**: leave **off**
+     (App Check needs a score-based key; users must not see a puzzle)
+   - Domains → **Add a domain**, twice:
      - `cricky-cricket-analysis.web.app`
      - `cricky-cricket-analysis.firebaseapp.com`
-   - Do **not** add `localhost` to this production key.
-6. Create the key. Copy the **site key** (a long string starting with `6L`).
-   That is `EXPO_PUBLIC_RECAPTCHA_SITE_KEY`, not a secret API key.
+   - Do **not** add `localhost`
+   - Do **not** mark it as a test key
+5. Create it. Copy the **site key** (starts with `6L`). That is not a secret.
 
 ### B. Register it in Firebase App Check
 
 1. Open
    [Firebase → App Check](https://console.firebase.google.com/project/cricky-cricket-analysis/appcheck)
-2. **Apps** tab → your **Web** app → **Register**.
+2. **Apps** tab → the **Web** app named **Cricky** → **Register**.
 3. Provider: **reCAPTCHA Enterprise**.
-4. Paste the site key from step A.
-5. Save.
+4. Paste the site key from step A. Save.
 
-### C. Do not enforce
+### C. Leave enforcement off
 
-On the **APIs** tab you will see Realtime Database, Authentication, etc.
-
-- Leave every row **Unenforced**.
-- Enforcement would block the live v1 site and any client without a token.
+Open the **APIs** tab. Realtime Database, Authentication, etc. must stay
+**Unenforced**. Do not click Enforce.
 
 ### D. Put the key in `.env.local`
 
@@ -63,25 +57,50 @@ On the **APIs** tab you will see Realtime Database, Authentication, etc.
 EXPO_PUBLIC_RECAPTCHA_SITE_KEY=6L-your-site-key
 ```
 
-### Local web (`localhost`)
+Tell the agent you pasted it so they can rebuild the live site. Until that
+deploy, the live site will not send App Check tokens.
 
-The production reCAPTCHA key will not work on `localhost`. For emulator
-development you do not need App Check (`npm run web:emulator` skips it).
+`localhost` / the emulator do not need this key (`npm run web:emulator` skips it).
 
-If you later test the **production** Firebase project from localhost, create a
-**debug token** in App Check → **Manage debug tokens**, then:
-
-```
-EXPO_PUBLIC_APPCHECK_DEBUG_TOKEN=the-debug-token
-```
+iPhone App Attest comes later, after there is an iOS Firebase app and a TestFlight build.
 
 ---
 
-## 3. What you should see
+## 2. $1 Firebase budget alert
 
-| File / console            | Expected                                                |
-| ------------------------- | ------------------------------------------------------- |
-| `.env.local`              | Site key filled in (Sentry DSN only if you set that up) |
-| GitHub                    | No new secrets (these values are public-ish)            |
-| Firebase App Check → APIs | All **Unenforced**                                      |
-| Live site                 | Unchanged (still v1)                                    |
+This emails you if the project might start costing money. It does **not**
+automatically shut the project off.
+
+1. Open
+   [https://console.cloud.google.com/billing?project=cricky-cricket-analysis](https://console.cloud.google.com/billing?project=cricky-cricket-analysis)
+2. If it asks you to link a billing account, pick the one already attached
+   (Firebase Spark/Blaze). You cannot create a budget with no billing account.
+3. Left menu → **Budgets & alerts** → **Create budget**.
+4. Fill it in like this:
+   - Name: `Cricky $1`
+   - Projects: **cricky-cricket-analysis** only
+   - Time range: **Monthly**
+   - Amount: **Specified amount** → `1` USD
+5. **Set budget alerts**:
+   - 50% of budget ($0.50)
+   - 90%
+   - 100%
+   - Email: your Google account (default)
+6. **Create**.
+
+If Google says billing is not enabled, you are still on the free Spark plan
+and there is no bill to watch. You can skip this until you switch to Blaze.
+(App Check / some Google APIs may ask you to enable Blaze. Free-tier usage
+usually stays $0; the $1 alert is the safety net.)
+
+---
+
+## What you should see when you are done
+
+| Where                     | Expected                                   |
+| ------------------------- | ------------------------------------------ |
+| `.env.local`              | Both `EXPO_PUBLIC_…` lines filled in       |
+| GitHub                    | No new secrets                             |
+| Firebase App Check → APIs | Every row **Unenforced**                   |
+| Cloud Billing → Budgets   | `Cricky $1` (or skipped if still on Spark) |
+| Live site                 | Unchanged until the agent redeploys        |

@@ -1,6 +1,7 @@
 export { DataProvider, useDataLayer } from './data-provider';
 export { useLegacyMatchRedirect } from './legacy-hash';
 export { initMonitoring, reportError } from './monitoring';
+export { parseSentryDsn } from './sentry-dsn';
 export { Loaded } from './Loaded';
 export { combine, mapLoadable, useSubscription, type Loadable } from './loadable';
 export { copyText, matchPathFromHash, scorerPath, shareLink, type ShareOutcome } from './share';
