@@ -1,7 +1,14 @@
 import { ev } from '@/domain/__fixtures__/scoring';
 import { buildMatchView } from '../../matches/match-view';
 import { snapshot } from '../../__fixtures__/data';
-import { commitEvent, commitUndo, parseMatchRef, type Publishable } from '../commit';
+import {
+  codeFromLink,
+  commitEvent,
+  commitUndo,
+  parseCodeInput,
+  parseMatchRef,
+  type Publishable,
+} from '../commit';
 
 function recorder(): Publishable & { calls: string[] } {
   const calls: string[] = [];
@@ -36,6 +43,24 @@ describe('parseMatchRef', () => {
     expect(parseMatchRef('cricky://score/abc123xyz')).toBe('abc123xyz');
     expect(parseMatchRef('  abc123xyz  ')).toBe('abc123xyz');
     expect(parseMatchRef('nope')).toBeNull();
+  });
+});
+
+describe('parseCodeInput', () => {
+  const link = 'https://cricky-cricket-analysis.web.app/score/match1?code=ABCDE12345';
+
+  it('passes a typed code through', () => {
+    expect(parseCodeInput(' ABCDE 12345 ', 'match1')).toEqual({ code: 'ABCDE 12345' });
+  });
+
+  it('reads the code out of a scorer link for this match', () => {
+    expect(parseCodeInput(link, 'match1')).toEqual({ code: 'ABCDE12345' });
+    expect(codeFromLink(link)).toBe('ABCDE12345');
+  });
+
+  it('rejects a link for another match or a link without a code', () => {
+    expect(parseCodeInput(link, 'other')).toEqual({ error: 'That link is for a different match.' });
+    expect(parseCodeInput('https://x.app/match/match1', 'match1')).toHaveProperty('error');
   });
 });
 

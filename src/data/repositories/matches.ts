@@ -262,7 +262,35 @@ export function createMatchRepository(ctx: DataContext) {
         (error) => listener.onError?.(error),
       );
     },
+
+    /** Every completed-match record: the input to overall and quick-match stats. */
+    watchAllResults(listener: Listener<Listed<MatchResultRecord>>): Unsubscribe {
+      return onValue(
+        ref(db, paths.matchResults),
+        (snap) => listener.onData(parseList(snap.val(), MatchResultRecordSchema)),
+        (error) => listener.onError?.(error),
+      );
+    },
+
+    /** Team and player names for one match, read from its setup. */
+    async getRoster(id: string): Promise<MatchRoster> {
+      const snap = await get(ref(db, `${paths.match(id)}/meta`));
+      const meta = MatchMetaSchema.safeParse(snap.val());
+      if (!meta.success) return { teams: {}, players: {} };
+      return {
+        teams: Object.fromEntries(Object.entries(meta.data.teams).map(([k, t]) => [k, t.name])),
+        players: Object.fromEntries(
+          Object.entries(meta.data.players).map(([k, p]) => [k, { name: p.name, team: p.team }]),
+        ),
+      };
+    },
   };
+}
+
+/** Names as they were when a match was set up. */
+export interface MatchRoster {
+  teams: Record<string, string>;
+  players: Record<string, { name: string; team: string }>;
 }
 
 export type MatchRepository = ReturnType<typeof createMatchRepository>;

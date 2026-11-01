@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { brand, Button, Icon, Text, useTheme } from '@/ui';
 import { confirmAction } from '../confirm';
 import { useDataLayer } from '../data-provider';
-import { copyText, scorerPath, shareLink } from '../share';
+import { appUrl, copyText, scorerPath, shareLink } from '../share';
 
 /** "ABCDE12345" as "ABCDE 12345" so it is easy to read aloud. */
 export function spacedCode(code: string): string {
@@ -115,6 +115,12 @@ export function ScorerCodePanel({ matchId, title, initialCode, compact }: Scorer
           }}>
           {spacedCode(code)}
         </Text>
+        <Text variant="label" style={{ color: '#85764F', marginTop: spacing.sm }}>
+          Scorer link
+        </Text>
+        <Text selectable variant="caption" style={{ color: brand.bar }} numberOfLines={2}>
+          {appUrl(scorerPath(matchId, code))}
+        </Text>
       </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
         <Button
@@ -125,6 +131,16 @@ export function ScorerCodePanel({ matchId, title, initialCode, compact }: Scorer
             void shareLink(scorerPath(matchId, code), `Score ${title}`).then((outcome) => {
               if (outcome === 'copied')
                 flash('Scorer link copied. It opens the pad with the code in.');
+            });
+          }}
+        />
+        <Button
+          label="Copy link"
+          variant="secondary"
+          icon={<Icon name="link-outline" size={18} color={colors.text} />}
+          onPress={() => {
+            void copyText(appUrl(scorerPath(matchId, code))).then((outcome) => {
+              if (outcome === 'copied') flash('Scorer link copied.');
             });
           }}
         />

@@ -32,7 +32,13 @@ export { DataError, isUnavailable, type DataErrorCode } from './errors';
 export { normalizeScorerCode } from './codes';
 export { toCompletedMatch, toMatchSetup } from './records';
 export type { AccessRepository } from './repositories/access';
-export type { MatchRepository, MatchSnapshot, NewMatch, Listed } from './repositories/matches';
+export type {
+  MatchRepository,
+  MatchRoster,
+  MatchSnapshot,
+  NewMatch,
+  Listed,
+} from './repositories/matches';
 export type {
   NewTournament,
   TournamentChanges,

@@ -14,15 +14,29 @@ export { ScorerCodePanel, spacedCode } from './admin/ScorerCodePanel';
 export { TournamentControl } from './admin/TournamentControl';
 export { nextStep, type NextStep } from './admin/next-step';
 export { ShareButton } from './ShareButton';
+export { ScopePicker, scopeFromKey } from './ScopePicker';
 
 export { Commentary } from './matches/Commentary';
+export { MatchCentre } from './matches/MatchCentre';
+export { MatchSummaryCard } from './matches/MatchSummaryCard';
 export { MatchCard } from './matches/MatchCard';
 export { OverTimeline } from './matches/OverTimeline';
 export { ScoreHeader } from './matches/ScoreHeader';
 export { Scorecard } from './matches/Scorecard';
 export { WormChart } from './matches/WormChart';
-export { useMatch, useRecentMatches, type MatchLists } from './matches/hooks';
+export {
+  scopeKey,
+  useMatch,
+  useRecentMatches,
+  useScopedMatches,
+  type MatchLists,
+  type MatchScope,
+} from './matches/hooks';
 export type { LiveFigures, MatchView } from './matches/match-view';
+
+export { StatsBoard } from './stats/StatsBoard';
+export { useStats } from './stats/hooks';
+export type { StatsView } from './stats/build-stats';
 
 export { Leaders } from './tournaments/Leaders';
 export { Playoffs } from './tournaments/Playoffs';
@@ -39,7 +53,13 @@ export { newRecordId } from './ids';
 
 export { CodeEntry } from './scoring/CodeEntry';
 export { ScorePad } from './scoring/ScorePad';
-export { commitEvent, commitUndo, parseMatchRef, publishDerived } from './scoring/commit';
+export {
+  commitEvent,
+  commitUndo,
+  parseCodeInput,
+  parseMatchRef,
+  publishDerived,
+} from './scoring/commit';
 export { useAlreadyScorer, useRedeemCode, useScoreActions } from './scoring/hooks';
 
 export { useAdminSignIn, useIsStaff } from './admin/hooks';

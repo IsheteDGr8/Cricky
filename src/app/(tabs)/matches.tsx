@@ -2,7 +2,14 @@ import { useCallback, useMemo, useState } from 'react';
 import { router } from 'expo-router';
 import { View } from 'react-native';
 
-import { Loaded, MatchCard, useRecentMatches, type MatchLists } from '@/features';
+import {
+  Loaded,
+  MatchCard,
+  ScopePicker,
+  useScopedMatches,
+  type MatchLists,
+  type MatchScope,
+} from '@/features';
 import { Chip, EmptyState, Screen, Text, useTheme, VirtualList } from '@/ui';
 
 type ListedMatch = MatchLists['live'][number];
@@ -18,7 +25,8 @@ const FILTERS: { value: Filter; label: string }[] = [
 ];
 
 export default function MatchesScreen() {
-  const matches = useRecentMatches();
+  const [scope, setScope] = useState<MatchScope>({ kind: 'all' });
+  const matches = useScopedMatches(scope);
   const { spacing } = useTheme();
   const [filter, setFilter] = useState<Filter>('all');
   const open = useCallback(
@@ -28,6 +36,7 @@ export default function MatchesScreen() {
 
   return (
     <Screen title="Matches" subtitle="Tap any match for the full scorecard." scroll={false}>
+      <ScopePicker value={scope} onChange={setScope} />
       <Loaded value={matches} loadingLabel="Loading matches…">
         {(lists) => (
           <>

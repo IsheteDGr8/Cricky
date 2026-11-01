@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { brand, Button, Field, Hero, Icon, onHero, Text, useTheme } from '@/ui';
+import { parseCodeInput } from './commit';
 import { useRedeemCode } from './hooks';
 
 export interface CodeEntryProps {
@@ -16,6 +17,7 @@ export function CodeEntry({ matchId, initialCode, onReady }: CodeEntryProps) {
   const { spacing } = useTheme();
   const { redeem, busy, error, ok } = useRedeemCode(matchId);
   const [code, setCode] = useState(initialCode ?? '');
+  const [inputError, setInputError] = useState<string | null>(null);
   const tried = useRef(false);
 
   useEffect(() => {
@@ -30,32 +32,46 @@ export function CodeEntry({ matchId, initialCode, onReady }: CodeEntryProps) {
 
   if (ok) return null;
 
+  const submit = () => {
+    const parsed = parseCodeInput(code, matchId);
+    if ('error' in parsed) {
+      setInputError(parsed.error);
+      return;
+    }
+    setInputError(null);
+    void redeem(parsed.code);
+  };
+  const shownError = inputError ?? error;
+
   return (
     <Hero>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
         <Icon name="key" size={22} color={brand.gold} />
         <Text variant="heading" style={{ color: onHero.strong }}>
-          {busy && initialCode ? 'Checking your scorer link…' : 'Enter the scorer code'}
+          {busy && initialCode ? 'Checking your scorer link…' : 'Become the scorer'}
         </Text>
       </View>
       <Text style={{ color: onHero.soft }}>
-        The admin has a 10-character code for this match. Spaces and dashes are fine. You stay
-        signed in on this device, so you only do this once.
+        Paste the scorer link the admin sent you, or type the 10-character code. You stay signed in
+        as this match&apos;s scorer on this device, so you only do this once.
       </Text>
       <View style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: spacing.md }}>
         <Field
-          label="Code"
+          label="Scorer link or code"
           value={code}
-          onChangeText={setCode}
-          autoCapitalize="characters"
+          onChangeText={(text) => {
+            setCode(text);
+            setInputError(null);
+          }}
+          autoCapitalize="none"
           autoCorrect={false}
           placeholder="ABCDE 12345"
-          onSubmitEditing={() => void redeem(code)}
+          onSubmitEditing={submit}
         />
       </View>
-      {error ? (
+      {shownError ? (
         <Text variant="bodyStrong" style={{ color: '#FFB4B4' }}>
-          {error}
+          {shownError}
         </Text>
       ) : null}
       <Button
@@ -64,7 +80,7 @@ export function CodeEntry({ matchId, initialCode, onReady }: CodeEntryProps) {
         size="lg"
         loading={busy}
         disabled={code.trim().length < 6}
-        onPress={() => void redeem(code)}
+        onPress={submit}
       />
     </Hero>
   );

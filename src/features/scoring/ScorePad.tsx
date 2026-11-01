@@ -11,7 +11,9 @@ import {
 } from '@/domain';
 import { brand, Button, Card, Icon, Text, useTheme } from '@/ui';
 import { newRecordId } from '../ids';
+import { completedSummary, performerLines, performerText } from '../matches/key-performers';
 import type { MatchView } from '../matches/match-view';
+import { MatchSummaryCard } from '../matches/MatchSummaryCard';
 import { confirmAction } from '../confirm';
 import { useScoreActions } from './hooks';
 import { PlayerPicker } from './PlayerPicker';
@@ -389,13 +391,26 @@ function Potm({
     ...(view.state.squads[view.meta.teamA] ?? []),
     ...(view.state.squads[view.meta.teamB] ?? []),
   ];
+  const summary = completedSummary(view.id, view.state);
+  const lines = summary ? performerLines(summary) : [];
+  const ranked = [
+    ...lines.map((l) => l.player).filter((id) => ids.includes(id)),
+    ...ids.filter((id) => !lines.some((l) => l.player === id)),
+  ];
   return (
-    <PlayerPicker
-      title="Player of the Match"
-      options={ids.map((id) => ({ id, name: view.playerName(id) }))}
-      disabled={disabled}
-      onPick={(player) => send({ type: 'set_player_of_match', player })}
-    />
+    <>
+      <MatchSummaryCard view={view} />
+      <PlayerPicker
+        title="Pick the Player of the Match"
+        options={ranked.map((id) => {
+          const line = lines.find((l) => l.player === id);
+          const hint = line ? performerText(line) : '';
+          return { id, name: view.playerName(id), ...(hint ? { hint } : {}) };
+        })}
+        disabled={disabled}
+        onPick={(player) => send({ type: 'set_player_of_match', player })}
+      />
+    </>
   );
 }
 

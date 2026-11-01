@@ -23,6 +23,7 @@ export { Chip, type ChipProps } from './components/Chip';
 export { Hero, onHero } from './components/Hero';
 export { Icon, type IconName, type IconProps } from './components/Icon';
 export { Section, type SectionProps } from './components/Section';
+export { Select, type SelectOption, type SelectProps } from './components/Select';
 export { Stepper, type StepperProps } from './components/Stepper';
 export { Steps, type StepsProps } from './components/Steps';
 export { Tile, type TileProps, type TileTone } from './components/Tile';
