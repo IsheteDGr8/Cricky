@@ -1,11 +1,14 @@
 /**
  * Loads a migrated database into the local emulator, plus one demo live match, so the app has
- * real data to show during development. Start the emulators first (`npm run emulators`).
+ * real data to show during development. Start the emulators first (`npm run emulators`); the
+ * emulator keeps data in memory only, so seed again after every restart.
  *
+ *   npm run emulators:seed                       (newest backups/*.migrated.json)
  *   npm run emulators:seed -- backups/rtdb-2026-09-23-1147.migrated.json
  */
 import { readJsonFile } from './read-json';
-import { basename, resolve, sep } from 'node:path';
+import { readdirSync, statSync } from 'node:fs';
+import { basename, join, resolve, sep } from 'node:path';
 import { replay, scoreSummary } from '@/domain';
 import { toDomainEvent, toMatchSetup } from '@/data/records';
 import type { MigratedDatabase } from './migrate-legacy/migrate';
@@ -16,11 +19,15 @@ const NAMESPACE = 'demo-cricky-default-rtdb';
 const LIVE_ID = 'demo-live';
 const BACKUPS = resolve('backups');
 
-const file = process.argv[2];
+const file = process.argv[2] ?? newestMigrated();
 if (!file) {
-  console.error('Usage: npm run emulators:seed -- backups/<file>.migrated.json');
+  console.error(
+    'No backups/*.migrated.json found. Run `npm run migrate:dry-run` first, or pass a file:\n' +
+      '  npm run emulators:seed -- backups/<file>.migrated.json',
+  );
   process.exit(2);
 }
+console.log(`Seeding from ${file}`);
 const abs = resolve(file);
 if (!abs.startsWith(BACKUPS + sep) || !basename(abs).endsWith('.migrated.json')) {
   console.error('Seed only from backups/*.migrated.json (local emulator, never production).');
@@ -62,7 +69,35 @@ if (sourceId && source) {
   };
 }
 
+function newestMigrated(): string | undefined {
+  try {
+    return readdirSync(BACKUPS)
+      .filter((name) => name.endsWith('.migrated.json'))
+      .map((name) => join(BACKUPS, name))
+      .sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0];
+  } catch {
+    return undefined;
+  }
+}
+
+/** Waits for the emulator, which takes a few seconds to come up after `npm run emulators`. */
+async function waitForEmulator(attempts = 30) {
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      await fetch(`${EMULATOR}/.json?ns=${NAMESPACE}&shallow=true`);
+      return;
+    } catch {
+      if (i === 1) console.log(`Waiting for the database emulator at ${EMULATOR}…`);
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  }
+  throw new Error(
+    `No database emulator at ${EMULATOR}. Is \`npm run emulators\` running in another terminal?`,
+  );
+}
+
 async function upload() {
+  await waitForEmulator();
   // Local emulator only (hard-coded 127.0.0.1). CodeQL flags file→HTTP; this
   // is a developer seed, not a user-facing request.
   // codeql[js/file-access-to-http]
@@ -82,6 +117,6 @@ async function upload() {
 }
 
 upload().catch((error: unknown) => {
-  console.error(`Seeding failed: ${String(error)}`);
+  console.error(`Seeding failed: ${error instanceof Error ? error.message : String(error)}`);
   process.exitCode = 1;
 });

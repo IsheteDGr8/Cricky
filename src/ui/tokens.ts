@@ -8,6 +8,8 @@ export const palette = {
   purple500: '#4B2E83',
   purple600: '#3E2570',
   purple700: '#2F1C56',
+  purple900: '#2A154F',
+  purpleTint: '#FAF8FC',
   gold300: '#D9CCA6',
   gold500: '#B7A57A',
   gold700: '#85764F',
@@ -53,17 +55,17 @@ export interface ThemeColors {
 
 export const colors: Record<ColorScheme, ThemeColors> = {
   light: {
-    background: palette.gray50,
+    background: '#F4F4F4',
     surface: palette.gray0,
-    surfaceMuted: palette.gray100,
-    border: palette.gray200,
-    text: palette.gray900,
-    textMuted: palette.gray600,
+    surfaceMuted: '#F0F0F0',
+    border: '#EAEAEA',
+    text: '#111111',
+    textMuted: '#666666',
     textInverse: palette.gray0,
     primary: palette.purple500,
     primaryPressed: palette.purple600,
     onPrimary: palette.gray0,
-    primaryMuted: palette.purple50,
+    primaryMuted: palette.purpleTint,
     accent: palette.gold500,
     onAccent: palette.gray950,
     success: palette.green500,
@@ -108,7 +110,7 @@ export const spacing = {
 
 export const radius = {
   sm: 6,
-  md: 10,
+  md: 12,
   lg: 16,
   pill: 999,
 } as const;
@@ -140,4 +142,11 @@ export const fonts = fontFamily;
 /** Minimum touch target (Apple HIG 44pt, Material 48dp). */
 export const minTouchTarget = 44;
 
-export const maxContentWidth = 720;
+export const maxContentWidth = 1040;
+
+/** Purple club bar at the top of every screen. */
+export const brand = {
+  bar: palette.purple900,
+  barEdge: palette.purple500,
+  gold: palette.gold500,
+} as const;

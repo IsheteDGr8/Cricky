@@ -10,23 +10,27 @@ export interface SegmentedControlProps<T extends string> {
   onChange: (value: T) => void;
 }
 
-/** A row of tabs for switching between views on one screen. Scrolls sideways when crowded. */
+/** Full-width tabs for switching between views on one screen. Scrolls sideways when crowded. */
 export function SegmentedControl<T extends string>({
   options,
   value,
   onChange,
 }: SegmentedControlProps<T>) {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, radius } = useTheme();
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={{ flexGrow: 0 }}
+      contentContainerStyle={{ flexGrow: 1 }}>
       <View
         accessibilityRole="tablist"
         style={{
           flexDirection: 'row',
-          gap: spacing.xs,
-          padding: spacing.xs,
-          borderRadius: radius.md,
-          backgroundColor: colors.surfaceMuted,
+          flexGrow: 1,
+          borderRadius: radius.sm,
+          overflow: 'hidden',
+          backgroundColor: '#E0E0E0',
         }}>
         {options.map((option) => {
           const selected = option.value === value;
@@ -37,13 +41,14 @@ export function SegmentedControl<T extends string>({
               accessibilityState={{ selected }}
               onPress={() => onChange(option.value)}
               style={{
-                minHeight: minTouchTarget - spacing.sm,
+                flexGrow: 1,
+                minHeight: minTouchTarget,
+                alignItems: 'center',
                 justifyContent: 'center',
-                paddingHorizontal: spacing.md,
-                borderRadius: radius.sm,
-                backgroundColor: selected ? colors.surface : 'transparent',
+                paddingHorizontal: 14,
+                backgroundColor: selected ? colors.primary : 'transparent',
               }}>
-              <Text variant="bodyStrong" color={selected ? 'primary' : 'textMuted'}>
+              <Text variant="bodyStrong" color={selected ? 'onPrimary' : 'textMuted'}>
                 {option.label}
               </Text>
             </Pressable>

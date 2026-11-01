@@ -32,14 +32,13 @@ export function Badge({ label, tone = 'neutral' }: BadgeProps) {
         gap: spacing.xs,
         paddingHorizontal: spacing.sm,
         paddingVertical: spacing.xxs,
-        borderRadius: radius.pill,
-        borderWidth: 1,
-        borderColor: color,
+        borderRadius: radius.sm,
+        backgroundColor: `${color}1A`,
       }}>
       {tone === 'live' && (
         <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: color }} />
       )}
-      <Text variant="label" style={{ color }}>
+      <Text variant="label" style={{ color, fontWeight: '700' }}>
         {label}
       </Text>
     </View>

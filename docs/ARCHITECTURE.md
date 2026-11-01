@@ -160,9 +160,12 @@ To try the screens with real data on your machine:
 
 ```sh
 npm run emulators                                   # terminal 1 (needs Java 21+)
-npm run emulators:seed -- backups/<export>.migrated.json
+npm run emulators:seed                              # terminal 2: newest backups/*.migrated.json
 npm run web:emulator                                # terminal 2
 ```
+
+The emulator keeps data in memory, so run the seed again after every emulator restart. It waits for
+the emulator to come up, so it is safe to run straight after starting it.
 
 Release and Hosting preview (v1 stays live): [`RELEASE.md`](RELEASE.md).
 App Check: [`KEYS.md`](KEYS.md). Sentry (later): [`SENTRY.md`](SENTRY.md).

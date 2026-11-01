@@ -16,10 +16,11 @@ export function Card({ children, onPress, accessibilityLabel, style, testID }: C
   const base: ViewStyle = {
     backgroundColor: colors.surface,
     borderColor: colors.border,
-    borderRadius: radius.lg,
+    borderRadius: radius.md,
     padding: spacing.lg,
     borderWidth: StyleSheet.hairlineWidth,
     minHeight: onPress ? 44 : undefined,
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.06)',
   };
 
   if (!onPress) {
@@ -36,7 +37,12 @@ export function Card({ children, onPress, accessibilityLabel, style, testID }: C
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
-      style={({ pressed }) => [base, pressed && { backgroundColor: colors.surfaceMuted }, style]}>
+      style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [
+        base,
+        hovered && { boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)', transform: [{ translateY: -2 }] },
+        pressed && { backgroundColor: colors.surfaceMuted },
+        style,
+      ]}>
       {children}
     </Pressable>
   );

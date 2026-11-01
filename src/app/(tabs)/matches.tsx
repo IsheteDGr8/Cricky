@@ -55,7 +55,11 @@ function MatchList({
       contentContainerStyle={{ gap: spacing, paddingBottom: spacing * 2 }}
       renderItem={(row) =>
         row.kind === 'header' ? (
-          <Text variant="label" color="textMuted" accessibilityRole="header">
+          <Text
+            variant="label"
+            color="primary"
+            accessibilityRole="header"
+            style={{ fontWeight: '800', marginTop: spacing }}>
             {row.title}
           </Text>
         ) : (
