@@ -52,8 +52,7 @@ PINs (replaced by scorer codes), and matches whose teams were deleted.
 11 matches exact, 1 differing by the single bowler wicket explained above, 2 skipped (test matches
 whose teams no longer exist). Standings, playoff bracket and champion match v1.
 
-## At cutover (Phase 7)
+## At cutover (Phase 7, done 2026-10-31)
 
-Follow [`CUTOVER.md`](CUTOVER.md). Short version: backup → dry run →
-`firebase deploy --config firebase.cutover.json` → `database:set` the migrated
-JSON → set `/roles/<uid>` = `owner`.
+See [`CUTOVER.md`](CUTOVER.md): backup → dry run → deploy → `database:set` the
+migrated JSON → set `/roles/<uid>` = `owner`.

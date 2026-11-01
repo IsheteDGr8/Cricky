@@ -2,11 +2,14 @@
 
 ## Unreleased
 
-### Beta site
+### Cutover (live 2026-10-31)
 
-- The new app can run at `cricky-v2.web.app` on its own database while v1 stays live (`docs/BETA.md`).
+- https://cricky-cricket-analysis.web.app serves the Expo app with the new rules and migrated data.
+- `firebase.json` is the live config; v1 is kept in `firebase.legacy.json` for rollback.
+- Hosting uploads icon fonts and `.well-known` (they were skipped), and serves each route its own
+  pre-rendered page instead of the home page.
+- `npm run deploy:web` publishes the site. The beta-site setup and cutover check are removed.
 - Classic v1 look and a centred desktop layout; the emulator seed waits for the emulator.
-- `docs/CUTOVER.md`: drop `--confirm`, which Firebase CLI 15 no longer accepts.
 
 ### Security
 

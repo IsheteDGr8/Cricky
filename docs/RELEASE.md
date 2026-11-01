@@ -1,30 +1,27 @@
-# Release (Phase 6)
+# Release
 
-How the new web app is built and how it will be published. The **live** site at
-https://cricky-cricket-analysis.web.app still serves `legacy/` until Phase 7.
+How the web app is built and published. https://cricky-cricket-analysis.web.app
+serves the Expo app since the cutover on 2026-10-31 ([`CUTOVER.md`](CUTOVER.md)).
 
 ## What is live today
 
-| Thing               | File / command                                               |
-| ------------------- | ------------------------------------------------------------ |
-| Hosting files       | `legacy/` (`firebase.json` `"public": "legacy"`)             |
-| Database rules      | `firebase/legacy.rules.json`                                 |
-| New app (local)     | `npm run web` or `npm run web:emulator`                      |
-| New app (export)    | `npm run export:web` → `dist/`                               |
-| Next Hosting config | `firebase.next.json` (used for previews and, later, cutover) |
+| Thing          | File / command                                          |
+| -------------- | ------------------------------------------------------- |
+| Hosting files  | `dist/` from `npm run export:web` (`firebase.json`)     |
+| Database rules | `firebase/database.rules.json`                          |
+| Local app      | `npm run web` or `npm run web:emulator`                 |
+| Publish site   | `npm run deploy:web`                                    |
+| v1 rollback    | `firebase.legacy.json` (see [`CUTOVER.md`](CUTOVER.md)) |
 
-`firebase deploy` without extra flags still deploys v1. That is intentional.
-
-## Preview the new website (does not replace v1)
+## Preview before publishing
 
 ```sh
 npm run export:web
-npx firebase hosting:channel:deploy next --config firebase.next.json --expires 7d
+npx firebase hosting:channel:deploy next --expires 7d
 ```
 
-Firebase prints a `*.web.app` preview URL. Share that to review the Expo app
-against production data (read-only for viewers). Do not run this against a
-migrated schema until cutover.
+Firebase prints a `*.web.app` preview URL that reads live data. Check it, then
+`npm run deploy:web`.
 
 ## GitHub Actions
 
@@ -36,8 +33,8 @@ migrated schema until cutover.
    after you approve the `production` environment, deploys `dist/` to the
    Hosting **preview channel** `next` using Workload Identity Federation.
 
-It never deploys `firebase/database.rules.json` and never overwrites live
-Hosting unless you later change the workflow for Phase 7.
+It never deploys database rules and never overwrites live Hosting; publishing
+stays a manual `npm run deploy:web`.
 
 ### One-time: GitHub environment
 
@@ -82,6 +79,4 @@ Wait for the friend’s Apple Developer access. Then follow Phase 6 in
 
 ## Cutover (Phase 7)
 
-Follow [`CUTOVER.md`](CUTOVER.md). Do not use `firebase.next.json` for the live
-flip — that file still points at legacy rules. The operator file is
-`firebase.cutover.json`.
+Done on 2026-10-31. See [`CUTOVER.md`](CUTOVER.md) for what was run and how to roll back.
