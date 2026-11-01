@@ -6,8 +6,9 @@
  *
  * Exits with 1 if any match was skipped or differs from v1, so it can gate the real import.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
+import { readJsonFile } from '../read-json';
 import { migrateBackup, type MatchReport } from './migrate';
 
 const input = process.argv[2];
@@ -16,7 +17,7 @@ if (!input) {
   process.exit(2);
 }
 
-const { database, report } = migrateBackup(JSON.parse(readFileSync(input, 'utf8')), {
+const { database, report } = migrateBackup(readJsonFile(input), {
   migratedBy: 'v1-migration',
 });
 const output = join(dirname(input), `${basename(input, '.json')}.migrated.json`);

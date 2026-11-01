@@ -4,7 +4,7 @@
  *
  *   npm run emulators:seed -- backups/rtdb-2026-09-23-1147.migrated.json
  */
-import { readFileSync } from 'node:fs';
+import { readJsonFile } from './read-json';
 import { basename, resolve, sep } from 'node:path';
 import { replay, scoreSummary } from '@/domain';
 import { toDomainEvent, toMatchSetup } from '@/data/records';
@@ -26,7 +26,7 @@ if (!abs.startsWith(BACKUPS + sep) || !basename(abs).endsWith('.migrated.json'))
   console.error('Seed only from backups/*.migrated.json (local emulator, never production).');
   process.exit(2);
 }
-const data = JSON.parse(readFileSync(abs, 'utf8')) as MigratedDatabase;
+const data = readJsonFile(abs) as MigratedDatabase;
 
 // A copy of the most recent completed match, stopped two thirds of the way through.
 const [sourceId, source] = Object.entries(data.matches)
