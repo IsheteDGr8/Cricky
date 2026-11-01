@@ -2,7 +2,7 @@ import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth, initializeAuth, type Auth } from 'firebase/auth';
 import { connectDatabaseEmulator, getDatabase, type Database } from 'firebase/database';
 import { initAppCheck } from './app-check';
-import { authPersistence } from './auth-persistence';
+import { authDependencies } from './auth-persistence';
 import { EMULATOR_PROJECT_ID, emulatorHost, firebaseConfig } from './config';
 
 export interface Backend {
@@ -42,7 +42,7 @@ export function getBackend(): Backend {
 
 function initAuth(app: FirebaseApp): Auth {
   try {
-    return initializeAuth(app, { persistence: authPersistence });
+    return initializeAuth(app, authDependencies);
   } catch {
     // Fast refresh re-runs this module after auth was already initialized.
     return getAuth(app);

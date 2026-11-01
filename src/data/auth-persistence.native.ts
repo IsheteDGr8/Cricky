@@ -8,4 +8,6 @@ const { getReactNativePersistence } = FirebaseAuth as typeof FirebaseAuth & {
 };
 
 /** iOS/Android: keep the session in AsyncStorage so scorers stay signed in across launches. */
-export const authPersistence: FirebaseAuth.Persistence = getReactNativePersistence(AsyncStorage);
+export const authDependencies: FirebaseAuth.Dependencies = {
+  persistence: getReactNativePersistence(AsyncStorage),
+};
