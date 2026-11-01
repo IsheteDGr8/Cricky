@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
 
+import { betaConfigProblems, bundleDatabase } from '../beta-check';
+
 const live = JSON.parse(readFileSync('firebase.json', 'utf8')) as {
   hosting: { public: string };
   database: { rules: string };
@@ -33,6 +35,32 @@ describe('live Firebase config', () => {
   it('keeps the cutover config unused until an operator runs it', () => {
     expect(cutover.hosting.public).toBe('dist');
     expect(cutover.database.rules).toBe('firebase/database.rules.json');
+  });
+});
+
+describe('beta site config', () => {
+  it('only targets the beta site and beta database', () => {
+    const beta = JSON.parse(readFileSync('firebase.beta.json', 'utf8')) as Parameters<
+      typeof betaConfigProblems
+    >[0];
+    expect(betaConfigProblems(beta)).toEqual([]);
+  });
+
+  it('rejects a config that would hit the live site or database', () => {
+    expect(
+      betaConfigProblems({
+        hosting: { public: 'dist' },
+        database: { rules: 'firebase/database.rules.json' },
+      }),
+    ).toHaveLength(2);
+  });
+
+  it('tells beta and live bundles apart', () => {
+    expect(bundleDatabase('x"https://cricky-v2-rtdb.firebaseio.com"')).toBe('beta');
+    expect(bundleDatabase('"https://cricky-cricket-analysis-default-rtdb.firebaseio.com"')).toBe(
+      'live',
+    );
+    expect(bundleDatabase('')).toBe('unknown');
   });
 });
 

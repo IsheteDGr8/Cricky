@@ -6,6 +6,8 @@ new database layout. Until you run the commands in §4, nothing live changes.
 Merging this PR only adds the `#match=` redirect and this checklist. CI never
 deploys `firebase.cutover.json`.
 
+To try v2 on real devices first without touching v1, use the beta site ([`BETA.md`](BETA.md)).
+
 ## 1. Pick a quiet window
 
 Tell everyone: no scoring on the old site until you say it is back. A live
@@ -47,7 +49,7 @@ npm run cutover:check
 npx firebase deploy --config firebase.cutover.json --only hosting,database --project cricky-cricket-analysis
 
 # Load migrated data (admin SDK / CLI bypasses rules)
-npx firebase database:set / backups/rtdb-cutover.migrated.json --project cricky-cricket-analysis --confirm
+npx firebase database:set / backups/rtdb-cutover.migrated.json --project cricky-cricket-analysis
 ```
 
 Then in the [Realtime Database data viewer](https://console.firebase.google.com/project/cricky-cricket-analysis/database):
@@ -70,7 +72,7 @@ If Hosting is wrong but data is fine: `npx firebase deploy --only hosting --proj
 If you must undo Hosting only (data already new): the old site cannot score on the new schema. Restore the backup instead:
 
 ```sh
-npx firebase database:set / backups/rtdb-cutover.json --project cricky-cricket-analysis --confirm
+npx firebase database:set / backups/rtdb-cutover.json --project cricky-cricket-analysis
 npx firebase deploy --only hosting,database --project cricky-cricket-analysis
 ```
 

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Beta site
+
+- The new app can run at `cricky-v2.web.app` on its own database while v1 stays live (`docs/BETA.md`).
+- Classic v1 look and a centred desktop layout; the emulator seed waits for the emulator.
+- `docs/CUTOVER.md`: drop `--confirm`, which Firebase CLI 15 no longer accepts.
+
 ### Security
 
 - Expo SDK 57 patch updates and `npm audit fix`; clears the critical `shell-quote` advisory.
