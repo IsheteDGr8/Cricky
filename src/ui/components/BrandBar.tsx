@@ -9,10 +9,12 @@ import { Text } from './Text';
 export interface BrandBarProps {
   /** Shows the gold ADMIN pill on the right. */
   onAdmin?: () => void;
+  /** Makes the club name a link back to Home. */
+  onHome?: () => void;
 }
 
 /** The purple club bar from the original site, shown above the main tabs. */
-export function BrandBar({ onAdmin }: BrandBarProps) {
+export function BrandBar({ onAdmin, onHome }: BrandBarProps) {
   const { spacing } = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -37,7 +39,18 @@ export function BrandBar({ onAdmin }: BrandBarProps) {
           paddingHorizontal: spacing.lg,
           paddingVertical: spacing.md,
         }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+        <Pressable
+          onPress={onHome}
+          disabled={!onHome}
+          accessibilityRole="link"
+          accessibilityLabel="UWB Cricket Club, home"
+          hitSlop={8}
+          style={({ pressed }) => ({
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: spacing.sm,
+            opacity: pressed ? 0.75 : 1,
+          })}>
           <MaterialCommunityIcons
             name="cricket"
             size={26}
@@ -61,7 +74,7 @@ export function BrandBar({ onAdmin }: BrandBarProps) {
               CRICKY LIVE SCORES
             </Text>
           </View>
-        </View>
+        </Pressable>
         {onAdmin ? (
           <Pressable
             onPress={onAdmin}

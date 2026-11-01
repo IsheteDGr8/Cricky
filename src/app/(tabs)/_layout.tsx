@@ -8,8 +8,15 @@ import { brand, BrandBar, useTheme, type IconName } from '@/ui';
 function Header() {
   const staff = useIsStaff();
   const isStaff = staff.status === 'ready' && staff.data;
-  return <BrandBar onAdmin={isStaff ? () => router.push('/more' as Href) : undefined} />;
+  return (
+    <BrandBar
+      onHome={() => router.navigate('/')}
+      onAdmin={isStaff ? () => router.navigate('/more' as Href) : undefined}
+    />
+  );
 }
+
+const renderHeader = () => <Header />;
 
 function tabIcon(active: IconName, inactive: IconName) {
   function TabIcon({
@@ -53,7 +60,7 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        header: Header,
+        header: renderHeader,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: '#999999',
         tabBarLabelStyle: { fontWeight: '700' },
