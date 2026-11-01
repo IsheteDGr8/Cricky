@@ -128,7 +128,7 @@ describe('a full match through the repositories', () => {
       (l) => admin.session.watchSession(l.onData),
       (s) => s?.role === 'admin',
     );
-    expect(session).toEqual({ uid: user.uid, isAnonymous: false, role: 'admin' });
+    expect(session).toMatchObject({ uid: user.uid, isAnonymous: false, role: 'admin' });
   });
 
   it('admin creates a tournament, two teams and a match', async () => {

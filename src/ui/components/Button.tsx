@@ -2,10 +2,10 @@ import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { useTheme } from '../theme';
-import { minTouchTarget } from '../tokens';
+import { brand, minTouchTarget } from '../tokens';
 import { Text } from './Text';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonVariant = 'primary' | 'gold' | 'secondary' | 'ghost' | 'danger';
 export type ButtonSize = 'md' | 'lg';
 
 export interface ButtonProps {
@@ -49,6 +49,12 @@ export function Button({
       pressed: colors.primaryPressed,
       fg: colors.onPrimary,
       border: colors.primary,
+    },
+    gold: {
+      bg: brand.gold,
+      pressed: '#A3926A',
+      fg: brand.bar,
+      border: brand.gold,
     },
     secondary: {
       bg: colors.surface,

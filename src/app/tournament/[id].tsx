@@ -10,10 +10,11 @@ import {
   ShareButton,
   Squads,
   Standings,
+  useIsStaff,
   useTournament,
   type TournamentView,
 } from '@/features';
-import { Card, SegmentedControl, Screen, Text, useTheme } from '@/ui';
+import { brand, Button, Card, Icon, SegmentedControl, Screen, Text, useTheme } from '@/ui';
 
 type Section = 'standings' | 'matches' | 'playoffs' | 'stats' | 'squads';
 
@@ -32,6 +33,8 @@ export default function TournamentScreen() {
 
 function TournamentPage({ view }: { view: TournamentView }) {
   const [section, setSection] = useState<Section>('standings');
+  const staff = useIsStaff();
+  const isStaff = staff.status === 'ready' && staff.data;
   const sections: { value: Section; label: string }[] = [
     { value: 'standings', label: 'Standings' },
     { value: 'matches', label: 'Matches' },
@@ -54,6 +57,16 @@ function TournamentPage({ view }: { view: TournamentView }) {
         <Card>
           <Text color="warning">Some data could not be shown: {view.problems.join('; ')}.</Text>
         </Card>
+      ) : null}
+      {isStaff ? (
+        <Button
+          label="Manage in control room"
+          variant="gold"
+          icon={<Icon name="settings" size={16} color={brand.bar} />}
+          onPress={() =>
+            router.push({ pathname: '/admin/tournament/[id]', params: { id: view.tournament.id } })
+          }
+        />
       ) : null}
       <SegmentedControl options={sections} value={section} onChange={setSection} />
       {section === 'standings' && <Standings view={view} />}

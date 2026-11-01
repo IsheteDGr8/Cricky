@@ -59,3 +59,25 @@ export function parseMatchRef(input: string): string | null {
   if (/^[A-Za-z0-9_-]{6,40}$/.test(trimmed)) return trimmed;
   return null;
 }
+
+/** The `code` in a scorer link (`/score/{id}?code=…`), or null if there is none. */
+export function codeFromLink(input: string): string | null {
+  const found = /[?&]code=([^&#\s]+)/.exec(input);
+  return found?.[1] ? decodeURIComponent(found[1]) : null;
+}
+
+/** What the scorer typed into the code box: a bare code, or a scorer link for this match. */
+export function parseCodeInput(
+  input: string,
+  matchId: string,
+): { code: string } | { error: string } {
+  const trimmed = input.trim();
+  if (!/[/?=]/.test(trimmed)) return { code: trimmed };
+  const linked = parseMatchRef(trimmed);
+  if (linked && linked !== matchId) return { error: 'That link is for a different match.' };
+  const code = codeFromLink(trimmed);
+  if (!code) {
+    return { error: 'That link has no code in it. Ask the admin for the scorer link or code.' };
+  }
+  return { code };
+}

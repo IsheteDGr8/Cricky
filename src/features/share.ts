@@ -14,12 +14,32 @@ export function matchPathFromHash(hash: string): string | null {
   }
 }
 
+/** A link that opens the score pad with the code already filled in. */
+export function scorerPath(matchId: string, code: string): string {
+  return `/score/${encodeURIComponent(matchId)}?code=${encodeURIComponent(code)}`;
+}
+
+/** The full link to a screen, e.g. `https://…/score/abc?code=…` on the web. */
+export function appUrl(path: string): string {
+  return Linking.createURL(path);
+}
+
+/** Copies text on web; phones get the share sheet, which has Copy. */
+export async function copyText(text: string): Promise<ShareOutcome> {
+  if (Platform.OS === 'web') {
+    await navigator.clipboard.writeText(text);
+    return 'copied';
+  }
+  const result = await Share.share({ message: text });
+  return result.action === Share.sharedAction ? 'shared' : 'dismissed';
+}
+
 /**
  * Shares a link to a screen in the app, e.g. `/match/abc`.
  * Browsers without a share sheet get the link copied instead.
  */
 export async function shareLink(path: string, title: string): Promise<ShareOutcome> {
-  const url = Linking.createURL(path);
+  const url = appUrl(path);
   if (Platform.OS === 'web') {
     if (typeof navigator.share === 'function') {
       try {

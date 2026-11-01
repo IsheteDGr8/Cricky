@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import type { ReactNode } from 'react';
+import { Text } from 'react-native';
 
 import { ev } from '@/domain/__fixtures__/scoring';
 import type { MatchResultRecord, MatchSummary } from '@/data';
@@ -10,6 +11,8 @@ import {
   Leaders,
   Loaded,
   MatchCard,
+  MatchCentre,
+  MatchSummaryCard,
   Playoffs,
   ScoreHeader,
   ScorePad,
@@ -113,6 +116,35 @@ describe('match components', () => {
   });
 });
 
+describe('match centre', () => {
+  it('opens on the score pad and can switch to the scorecard', async () => {
+    function Centre() {
+      const match = useMatch('m1');
+      return (
+        <Loaded value={match}>
+          {(view) => <MatchCentre view={view} score={<Text>THE PAD</Text>} />}
+        </Loaded>
+      );
+    }
+    await wrap(<Centre />);
+    expect(await screen.findByText('THE PAD')).toBeTruthy();
+    await fireEvent.press(screen.getByRole('tab', { name: 'Scorecard' }));
+    expect(screen.getByLabelText('Huskies batting')).toBeTruthy();
+    expect(screen.queryByText('THE PAD')).toBeNull();
+  });
+
+  it('shows the match summary once both innings are done', async () => {
+    function Summary() {
+      const match = useMatch('m1');
+      return <Loaded value={match}>{(view) => <MatchSummaryCard view={view} />}</Loaded>;
+    }
+    await wrap(<Summary />);
+    expect(await screen.findByText('MATCH SUMMARY')).toBeTruthy();
+    expect(screen.getByText(/Huskies won/)).toBeTruthy();
+    expect(screen.getAllByText('Top batters').length).toBe(2);
+  });
+});
+
 describe('score pad', () => {
   it('offers runs when the next action is a delivery', async () => {
     const live = fakeDataLayer({
@@ -129,7 +161,7 @@ describe('score pad', () => {
         </AppThemeProvider>
       </DataProvider>,
     );
-    expect(await screen.findByText('This ball')).toBeTruthy();
+    expect(await screen.findByText('TAP WHAT HAPPENED ON THIS BALL')).toBeTruthy();
     expect(screen.getByLabelText('4 runs')).toBeTruthy();
     await fireEvent.press(screen.getByLabelText('4 runs'));
   });

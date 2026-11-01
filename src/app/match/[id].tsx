@@ -1,28 +1,16 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
 
 import {
-  Commentary,
   Loaded,
-  OverTimeline,
+  MatchCentre,
+  MatchSummaryCard,
   ScoreHeader,
-  Scorecard,
   ShareButton,
-  WormChart,
   useIsStaff,
   useMatch,
   type MatchView,
 } from '@/features';
-import { Button, SegmentedControl, Screen } from '@/ui';
-
-type Section = 'commentary' | 'scorecard' | 'overs' | 'worm';
-
-const SECTIONS: { value: Section; label: string }[] = [
-  { value: 'commentary', label: 'Commentary' },
-  { value: 'scorecard', label: 'Scorecard' },
-  { value: 'overs', label: 'Overs' },
-  { value: 'worm', label: 'Worm' },
-];
+import { Button, Icon, Screen, useTheme } from '@/ui';
 
 export default function MatchScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -38,9 +26,6 @@ export default function MatchScreen() {
 }
 
 function MatchPage({ view }: { view: MatchView }) {
-  const [section, setSection] = useState<Section>(
-    view.state.status === 'complete' ? 'scorecard' : 'commentary',
-  );
   const title = `${view.teamName(view.meta.teamA)} v ${view.teamName(view.meta.teamB)}`;
 
   return (
@@ -52,24 +37,27 @@ function MatchPage({ view }: { view: MatchView }) {
         }}
       />
       <ScoreHeader view={view} />
-      <ScoreLink id={view.id} />
-      <SegmentedControl options={SECTIONS} value={section} onChange={setSection} />
-      {section === 'commentary' && <Commentary view={view} />}
-      {section === 'scorecard' && <Scorecard view={view} />}
-      {section === 'overs' && <OverTimeline view={view} />}
-      {section === 'worm' && <WormChart view={view} />}
+      <ScoreLink view={view} />
+      <MatchSummaryCard view={view} />
+      <MatchCentre view={view} />
     </>
   );
 }
 
-function ScoreLink({ id }: { id: string }) {
+/** Admins score straight away; anyone else is asked for the scorer link or code. */
+function ScoreLink({ view }: { view: MatchView }) {
+  const { colors } = useTheme();
   const staff = useIsStaff();
-  if (staff.status !== 'ready' || !staff.data) return null;
+  const isStaff = staff.status === 'ready' && staff.data;
+  const finished =
+    view.meta.locked || (view.state.status === 'complete' && Boolean(view.state.playerOfMatch));
+  if (!isStaff && finished) return null;
   return (
     <Button
-      label="Score this match"
+      label={isStaff ? 'Score this match' : "I'm the scorer"}
       variant="secondary"
-      onPress={() => router.push({ pathname: '/score/[id]', params: { id } })}
+      icon={<Icon name="create-outline" size={18} color={colors.text} />}
+      onPress={() => router.push({ pathname: '/score/[id]', params: { id: view.id } })}
     />
   );
 }

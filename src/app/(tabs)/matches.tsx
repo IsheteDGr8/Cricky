@@ -1,28 +1,59 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { router } from 'expo-router';
+import { View } from 'react-native';
 
-import { Loaded, MatchCard, useRecentMatches, type MatchLists } from '@/features';
-import { EmptyState, Screen, Text, useTheme, VirtualList } from '@/ui';
+import {
+  Loaded,
+  MatchCard,
+  ScopePicker,
+  useScopedMatches,
+  type MatchLists,
+  type MatchScope,
+} from '@/features';
+import { Chip, EmptyState, Screen, Text, useTheme, VirtualList } from '@/ui';
 
 type ListedMatch = MatchLists['live'][number];
 type Row =
   { kind: 'header'; id: string; title: string } | { kind: 'match'; id: string; match: ListedMatch };
+type Filter = 'all' | 'live' | 'upcoming' | 'finished';
+
+const FILTERS: { value: Filter; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'live', label: 'Live' },
+  { value: 'upcoming', label: 'Upcoming' },
+  { value: 'finished', label: 'Results' },
+];
 
 export default function MatchesScreen() {
-  const matches = useRecentMatches();
+  const [scope, setScope] = useState<MatchScope>({ kind: 'all' });
+  const matches = useScopedMatches(scope);
   const { spacing } = useTheme();
+  const [filter, setFilter] = useState<Filter>('all');
   const open = useCallback(
     (id: string) => router.push({ pathname: '/match/[id]', params: { id } }),
     [],
   );
 
   return (
-    <Screen
-      title="Matches"
-      subtitle="Live and recent matches, including quick matches."
-      scroll={false}>
+    <Screen title="Matches" subtitle="Tap any match for the full scorecard." scroll={false}>
+      <ScopePicker value={scope} onChange={setScope} />
       <Loaded value={matches} loadingLabel="Loading matches…">
-        {(lists) => <MatchList lists={lists} spacing={spacing.md} open={open} />}
+        {(lists) => (
+          <>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+              {FILTERS.map((f) => (
+                <Chip
+                  key={f.value}
+                  label={f.label}
+                  count={f.value === 'all' ? undefined : lists[f.value].length}
+                  selected={filter === f.value}
+                  onPress={() => setFilter(f.value)}
+                />
+              ))}
+            </View>
+            <MatchList lists={lists} filter={filter} spacing={spacing.md} open={open} />
+          </>
+        )}
       </Loaded>
     </Screen>
   );
@@ -30,20 +61,22 @@ export default function MatchesScreen() {
 
 function MatchList({
   lists,
+  filter,
   spacing,
   open,
 }: {
   lists: MatchLists;
+  filter: Filter;
   spacing: number;
   open: (id: string) => void;
 }) {
-  const rows = useMemo(() => rowsOf(lists), [lists]);
+  const rows = useMemo(() => rowsOf(lists, filter), [lists, filter]);
   if (rows.length === 0) {
     return (
       <EmptyState
         icon="radio-outline"
-        title="No matches yet"
-        message="Matches appear here as soon as they are scheduled."
+        title={filter === 'live' ? 'Nothing live right now' : 'No matches here yet'}
+        message="Matches appear here as soon as an admin starts them."
       />
     );
   }
@@ -70,15 +103,16 @@ function MatchList({
   );
 }
 
-function rowsOf(lists: MatchLists): Row[] {
+function rowsOf(lists: MatchLists, filter: Filter): Row[] {
   const rows: Row[] = [];
-  const add = (title: string, matches: MatchLists['live']) => {
-    if (matches.length === 0) return;
+  const add = (key: Exclude<Filter, 'all'>, title: string) => {
+    const matches = lists[key];
+    if (matches.length === 0 || (filter !== 'all' && filter !== key)) return;
     rows.push({ kind: 'header', id: `h-${title}`, title });
     for (const match of matches) rows.push({ kind: 'match', id: match.id, match });
   };
-  add('Live', lists.live);
-  add('Upcoming', lists.upcoming);
-  add('Results', lists.finished);
+  add('live', 'Live');
+  add('upcoming', 'Upcoming');
+  add('finished', 'Results');
   return rows;
 }

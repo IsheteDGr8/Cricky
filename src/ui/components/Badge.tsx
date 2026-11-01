@@ -1,9 +1,11 @@
 import { View } from 'react-native';
 
 import { useTheme } from '../theme';
+import { brand } from '../tokens';
 import { Text } from './Text';
 
-export type BadgeTone = 'neutral' | 'live' | 'success' | 'warning' | 'brand';
+/** `onHero` is for badges sitting on the purple Hero panel. */
+export type BadgeTone = 'neutral' | 'live' | 'success' | 'warning' | 'brand' | 'onHero';
 
 export interface BadgeProps {
   label: string;
@@ -18,6 +20,7 @@ export function Badge({ label, tone = 'neutral' }: BadgeProps) {
     success: colors.success,
     warning: colors.warning,
     brand: colors.primary,
+    onHero: brand.gold,
   };
   const color = toneColor[tone];
 
@@ -33,7 +36,7 @@ export function Badge({ label, tone = 'neutral' }: BadgeProps) {
         paddingHorizontal: spacing.sm,
         paddingVertical: spacing.xxs,
         borderRadius: radius.sm,
-        backgroundColor: `${color}1A`,
+        backgroundColor: tone === 'onHero' ? 'rgba(255, 255, 255, 0.14)' : `${color}1A`,
       }}>
       {tone === 'live' && (
         <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: color }} />

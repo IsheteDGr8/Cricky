@@ -142,6 +142,7 @@ export function fakeDataLayer(
       redeemScorerCode: async () => {},
       hasRedeemed: async () => false,
       issueScorerCode: async () => 'ABCDEFGHJK',
+      getScorerCode: async () => 'ABCDEFGHJK',
     },
     tournaments: {
       watchAll: (l: Listener<WithId<Tournament>[]>) => answer(() => data.tournaments ?? [])(l),
@@ -161,6 +162,9 @@ export function fakeDataLayer(
         answer(() => data.summaries ?? listed<MatchSummary>([]))(l),
       watchResults: (_: string, l: Listener<Listed<MatchResultRecord>>) =>
         answer(() => data.results ?? listed<MatchResultRecord>([]))(l),
+      watchAllResults: (l: Listener<Listed<MatchResultRecord>>) =>
+        answer(() => data.results ?? listed<MatchResultRecord>([]))(l),
+      getRoster: async () => ({ teams: {}, players: {} }),
       append: async () => {},
       undo: async () => {},
       publishSummary: async () => {},
