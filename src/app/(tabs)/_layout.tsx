@@ -1,9 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Tabs } from 'expo-router';
+import { router, Tabs, type Href } from 'expo-router';
 import type { ComponentProps } from 'react';
 import type { ColorValue } from 'react-native';
 
-import { useTheme } from '@/ui';
+import { BrandBar, useTheme } from '@/ui';
+
+function Header() {
+  return <BrandBar onAdmin={() => router.push('/admin' as Href)} />;
+}
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -28,10 +32,15 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        header: Header,
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+        tabBarInactiveTintColor: '#999999',
+        tabBarLabelStyle: { fontWeight: '700' },
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.06)',
+        },
       }}>
       <Tabs.Screen
         name="index"

@@ -9,8 +9,6 @@ import {
   type ColorScheme,
   type ThemeColors,
 } from './tokens';
-import { useColorScheme } from './use-color-scheme';
-
 export interface Theme {
   scheme: ColorScheme;
   colors: ThemeColors;
@@ -33,8 +31,7 @@ export function AppThemeProvider({
   children: ReactNode;
   scheme?: ColorScheme;
 }) {
-  const systemScheme = useColorScheme();
-  const theme = buildTheme(forcedScheme ?? systemScheme);
+  const theme = buildTheme(forcedScheme ?? 'light');
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
 }
 

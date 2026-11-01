@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { memo } from 'react';
 import { View } from 'react-native';
 
@@ -6,9 +7,9 @@ import { Badge, Card, Text, useTheme, type BadgeTone } from '@/ui';
 import { dateText } from '../format';
 
 const STATUS: Record<Tournament['status'], { label: string; tone: BadgeTone }> = {
-  upcoming: { label: 'Upcoming', tone: 'neutral' },
-  active: { label: 'In progress', tone: 'brand' },
-  complete: { label: 'Complete', tone: 'success' },
+  upcoming: { label: 'Upcoming', tone: 'warning' },
+  active: { label: 'Active', tone: 'success' },
+  complete: { label: 'Completed', tone: 'neutral' },
   archived: { label: 'Archived', tone: 'neutral' },
 };
 
@@ -19,20 +20,26 @@ export const TournamentCard = memo(function TournamentCard({
   tournament: WithId<Tournament>;
   onPress: () => void;
 }) {
-  const { spacing } = useTheme();
+  const { colors, spacing } = useTheme();
   const status = STATUS[tournament.status];
   return (
     <Card onPress={onPress} accessibilityLabel={`${tournament.name}, ${status.label}`}>
-      <View style={{ gap: spacing.xs }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm }}>
-          <Text variant="heading" style={{ flex: 1 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
+        <View style={{ flex: 1, gap: spacing.xs }}>
+          <Badge label={status.label} tone={status.tone} />
+          <Text variant="heading" color="primary">
             {tournament.name}
           </Text>
-          <Badge label={status.label} tone={status.tone} />
+          <Text color="textMuted">
+            {tournament.oversDefault} overs · started {dateText(tournament.createdAt)}
+          </Text>
         </View>
-        <Text color="textMuted">
-          {tournament.oversDefault} overs · started {dateText(tournament.createdAt)}
-        </Text>
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={colors.textMuted}
+          accessibilityElementsHidden
+        />
       </View>
     </Card>
   );

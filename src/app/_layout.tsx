@@ -1,40 +1,41 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { DataProvider, initMonitoring, useLegacyMatchRedirect } from '@/features';
-import { AppThemeProvider, buildTheme, useColorScheme } from '@/ui';
+import { AppThemeProvider, brand, buildTheme } from '@/ui';
 
 initMonitoring();
 
-function useNavigationTheme() {
-  const scheme = useColorScheme();
-  const { colors } = buildTheme(scheme);
-  const base = scheme === 'dark' ? DarkTheme : DefaultTheme;
-  return {
-    ...base,
-    colors: {
-      ...base.colors,
-      primary: colors.primary,
-      background: colors.background,
-      card: colors.surface,
-      text: colors.text,
-      border: colors.border,
-      notification: colors.live,
-    },
-  };
-}
+const { colors } = buildTheme('light');
+
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: colors.primary,
+    background: colors.background,
+    card: colors.surface,
+    text: colors.text,
+    border: colors.border,
+    notification: colors.live,
+  },
+};
 
 export default function RootLayout() {
-  const scheme = useColorScheme();
-  const navTheme = useNavigationTheme();
   useLegacyMatchRedirect();
 
   return (
     <DataProvider>
       <AppThemeProvider>
         <ThemeProvider value={navTheme}>
-          <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-          <Stack>
+          <StatusBar style="light" />
+          <Stack
+            screenOptions={{
+              headerStyle: { backgroundColor: brand.bar },
+              headerTintColor: '#FFFFFF',
+              headerTitleStyle: { fontWeight: '700' },
+              headerShadowVisible: false,
+            }}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="match/[id]" options={{ title: 'Match' }} />
             <Stack.Screen name="tournament/[id]" options={{ title: 'Tournament' }} />

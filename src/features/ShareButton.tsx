@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useState } from 'react';
 import { Pressable } from 'react-native';
 
-import { minTouchTarget, useTheme } from '@/ui';
+import { brand, minTouchTarget, useTheme } from '@/ui';
 import { shareLink } from './share';
 
 /**
@@ -39,7 +39,7 @@ export function ShareButton({ path, title }: { path: string; title: string }) {
       <Ionicons
         name={copied ? 'checkmark' : 'share-outline'}
         size={22}
-        color={copied ? colors.success : colors.primary}
+        color={copied ? brand.gold : colors.onPrimary}
       />
     </Pressable>
   );
