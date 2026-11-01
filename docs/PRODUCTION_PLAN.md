@@ -321,9 +321,9 @@ Each phase ships as its own pull request(s) so it can be reviewed and tested.
 
 ### Phase 7: Cutover
 
-- [x] Code ready: `#match=<id>` → `/match/<id>` on the new web app; `firebase.cutover.json` + [`CUTOVER.md`](CUTOVER.md). **Not flipped.** Live Hosting is still v1.
-- [ ] Owner: freeze scoring, backup, `migrate:dry-run`, then run the flip commands in `CUTOVER.md`.
-- [ ] Owner: set `/roles/<uid>` = `owner`; confirm the new site and a hash link.
+- [x] Code ready: `#match=<id>` → `/match/<id>` on the new web app; [`CUTOVER.md`](CUTOVER.md).
+- [x] 2026-10-31: backup, `migrate:dry-run`, new site + rules deployed, migrated data loaded.
+- [x] `/roles/<uid>` = `owner` set; new site and a hash link confirmed.
 - [ ] Later: remove the PIN account; delete `legacy/` after a grace period.
 
 ### Phase 8: Android APK

@@ -108,9 +108,8 @@ won each fixture.
 | `connection.ts`     | `.info/connected` so the pad can queue when offline              |
 | `errors.ts`         | `DataError` with a `code` the screens can show a message for     |
 
-Two rules files exist until the new app replaces the old one: `firebase/legacy.rules.json` is what
-production runs today (used by `firebase deploy`), and `firebase/database.rules.json` is the new
-schema (used by the emulator and the tests). Deploying the new rules is part of the cutover.
+Production runs `firebase/database.rules.json` (also used by the emulator and the tests).
+`firebase/legacy.rules.json` is kept only so `firebase.legacy.json` can roll back to v1.
 
 Emulator tests (`*.emulator.test.ts`) exercise the rules and the repositories against a local
 Firebase: `npm run test:rules`. They need Java 21+.

@@ -1,19 +1,18 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
-import { betaConfigProblems, bundleDatabase } from '../beta-check';
+interface HostingConfig {
+  hosting: {
+    public: string;
+    ignore?: string[];
+    cleanUrls?: boolean;
+    rewrites?: { source: string; destination: string }[];
+  };
+  database: { rules: string };
+}
 
-const live = JSON.parse(readFileSync('firebase.json', 'utf8')) as {
-  hosting: { public: string };
-  database: { rules: string };
-};
-const next = JSON.parse(readFileSync('firebase.next.json', 'utf8')) as {
-  hosting: { public: string };
-  database: { rules: string };
-};
-const cutover = JSON.parse(readFileSync('firebase.cutover.json', 'utf8')) as {
-  hosting: { public: string };
-  database: { rules: string };
-};
+const live = JSON.parse(readFileSync('firebase.json', 'utf8')) as HostingConfig;
+const legacy = JSON.parse(readFileSync('firebase.legacy.json', 'utf8')) as HostingConfig;
 const expo = JSON.parse(readFileSync('app.json', 'utf8')) as {
   expo: { android: { package: string; versionCode: number; allowBackup: boolean } };
 };
@@ -22,45 +21,43 @@ const eas = JSON.parse(readFileSync('eas.json', 'utf8')) as {
 };
 
 describe('live Firebase config', () => {
-  it('still serves the v1 site and legacy rules', () => {
-    expect(live.hosting.public).toBe('legacy');
-    expect(live.database.rules).toBe('firebase/legacy.rules.json');
+  it('serves the Expo web export with the new rules', () => {
+    expect(live.hosting.public).toBe('dist');
+    expect(live.database.rules).toBe('firebase/database.rules.json');
   });
 
-  it('keeps the next Hosting config off production rules', () => {
-    expect(next.hosting.public).toBe('dist');
-    expect(next.database.rules).toBe('firebase/legacy.rules.json');
+  it('uploads icon fonts and app-link files', () => {
+    const ignore = live.hosting.ignore ?? [];
+    expect(ignore).not.toContain('**/node_modules/**');
+    expect(ignore).not.toContain('**/.*');
   });
 
-  it('keeps the cutover config unused until an operator runs it', () => {
-    expect(cutover.hosting.public).toBe('dist');
-    expect(cutover.database.rules).toBe('firebase/database.rules.json');
+  it('serves each route its own pre-rendered page', () => {
+    expect(live.hosting.cleanUrls).toBe(true);
+    const rewrites = live.hosting.rewrites ?? [];
+    for (const route of ['match', 'tournament', 'score', 'admin/tournament']) {
+      expect(rewrites).toContainEqual({
+        source: `/${route}/*`,
+        destination: `/${route}/[id].html`,
+      });
+    }
+    expect(rewrites.at(-1)).toEqual({ source: '**', destination: '/+not-found.html' });
+  });
+
+  it('keeps the v1 config only for rollback', () => {
+    expect(legacy.hosting.public).toBe('legacy');
+    expect(legacy.database.rules).toBe('firebase/legacy.rules.json');
   });
 });
 
-describe('beta site config', () => {
-  it('only targets the beta site and beta database', () => {
-    const beta = JSON.parse(readFileSync('firebase.beta.json', 'utf8')) as Parameters<
-      typeof betaConfigProblems
-    >[0];
-    expect(betaConfigProblems(beta)).toEqual([]);
-  });
+describe('web export', () => {
+  const dist = 'dist';
+  const exported = existsSync(join(dist, 'index.html'));
 
-  it('rejects a config that would hit the live site or database', () => {
-    expect(
-      betaConfigProblems({
-        hosting: { public: 'dist' },
-        database: { rules: 'firebase/database.rules.json' },
-      }),
-    ).toHaveLength(2);
-  });
-
-  it('tells beta and live bundles apart', () => {
-    expect(bundleDatabase('x"https://cricky-v2-rtdb.firebaseio.com"')).toBe('beta');
-    expect(bundleDatabase('"https://cricky-cricket-analysis-default-rtdb.firebaseio.com"')).toBe(
-      'live',
-    );
-    expect(bundleDatabase('')).toBe('unknown');
+  (exported ? it : it.skip)('has a page for every rewrite destination', () => {
+    for (const rewrite of live.hosting.rewrites ?? []) {
+      expect(existsSync(join(dist, rewrite.destination))).toBe(true);
+    }
   });
 });
 

@@ -7,10 +7,7 @@ import type { FirebaseOptions } from 'firebase/app';
 export const firebaseConfig: FirebaseOptions = {
   apiKey: 'AIzaSyAzIFrKBsY2iwHRdFAPzE4NrincGKv8iyE',
   authDomain: 'cricky-cricket-analysis.firebaseapp.com',
-  // `npm run export:beta` points the build at the separate beta database (docs/BETA.md).
-  databaseURL:
-    process.env.EXPO_PUBLIC_FIREBASE_DATABASE_URL ||
-    'https://cricky-cricket-analysis-default-rtdb.firebaseio.com',
+  databaseURL: 'https://cricky-cricket-analysis-default-rtdb.firebaseio.com',
   projectId: 'cricky-cricket-analysis',
   storageBucket: 'cricky-cricket-analysis.firebasestorage.app',
   messagingSenderId: '42341049471',

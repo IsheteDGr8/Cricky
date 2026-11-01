@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy_preview:
-        description: Deploy dist/ to the Hosting preview channel (does not replace v1)
+        description: Deploy dist/ to the Hosting preview channel (does not replace the live site)
         type: boolean
         default: false
 
@@ -42,9 +42,9 @@ jobs:
       - name: Export web
         run: npm run export:web
 
-      - name: Safety — live Hosting still points at legacy
+      - name: Safety — Hosting serves dist/ with the new rules
         run: |
-          node -e "const f=require('./firebase.json'); if (f.hosting.public!=='legacy' || f.database.rules!=='firebase/legacy.rules.json') { console.error(f); process.exit(1) }"
+          node -e "const f=require('./firebase.json'); if (f.hosting.public!=='dist' || f.database.rules!=='firebase/database.rules.json') { console.error(f); process.exit(1) }"
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -114,4 +114,4 @@ jobs:
 
       - name: Deploy preview channel
         if: steps.wif.outputs.configured == 'true'
-        run: npx firebase hosting:channel:deploy next --config firebase.next.json --expires 7d --project cricky-cricket-analysis --non-interactive
+        run: npx firebase hosting:channel:deploy next --expires 7d --project cricky-cricket-analysis --non-interactive
